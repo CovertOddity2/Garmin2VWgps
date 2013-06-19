@@ -23,6 +23,11 @@
  */
 package com.pietervaneeckhout.garmin2vwgps.model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
 /**
  * Waypoint.java (UTF-8)
  *
@@ -34,20 +39,119 @@ package com.pietervaneeckhout.garmin2vwgps.model;
  * @since 1.0.0
  * @version 1.0.0
  */
-public class Waypoint {
+public class Waypoint implements Serializable {
 
+    private static final long serialVersionUID = 688432065L;
     private String name;
     private double longitude, latitude;
-    private boolean east, noth;
+    private boolean east, north;
 
     public Waypoint(String name, double longitude, boolean east,
-                    double latitude,
-                    boolean noth) {
+            double latitude,
+            boolean north) {
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
         this.east = east;
-        this.noth = noth;
+        this.north = north;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    /**
+     *
+     * @param name the name value
+     * @throws IllegalArgumentException
+     */
+    public void setName(String name) throws IllegalArgumentException {
+        validateName(name);
+        this.name = name;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    /**
+     *
+     * @param longitude the longitude value
+     * @throws IllegalArgumentException
+     */
+    public void setLongitude(double longitude) throws IllegalArgumentException {
+        validateLatitude(longitude);
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    /**
+     *
+     * @param latitude the latitude value
+     * @throws IllegalArgumentException
+     */
+    public void setLatitude(double latitude) throws IllegalArgumentException {
+        validateLatitude(latitude);
+        this.latitude = latitude;
+    }
+
+    public boolean isEast() {
+        return east;
+    }
+
+    /**
+     *
+     * @param east is east
+     * @throws IllegalArgumentException
+     */
+    public void setEast(boolean east) throws IllegalArgumentException {
+        validateEast(east);
+        this.east = east;
+    }
+
+    public boolean isNorth() {
+        return north;
+    }
+
+    public void setNorth(boolean north) throws IllegalArgumentException {
+        validateNorth(north);
+        this.north = north;
+    }
+
+    private void validateState() throws IllegalArgumentException {
+        validateNorth(north);
+        validateEast(east);
+        validateName(name);
+        validateLatitude(latitude);
+        validateLongitude(longitude);
+    }
+
+    private void validateNorth(boolean north) throws IllegalArgumentException {
+    }
+
+    private void validateEast(boolean east) throws IllegalArgumentException {
+    }
+
+    private void validateName(String name) throws IllegalArgumentException {
+        boolean nameHasContent = (name != null) && (!name.equals(""));
+        if (!nameHasContent) {
+            throw new IllegalArgumentException("Names must be non-null and non-empty.");
+        }
+    }
+
+    private void validateLongitude(double longitude) throws IllegalArgumentException {
+        if (longitude < 0 || longitude > 180) {
+            throw new IllegalArgumentException("Longitude must be between 0 and 180");
+        }
+    }
+
+    private void validateLatitude(double latitude) throws IllegalArgumentException {
+        if (latitude < 0 || latitude > 180) {
+            throw new IllegalArgumentException("Latitude must be between 0 and 180");
+        }
     }
 
     public String toVolkswagenWaypoint() {
@@ -57,7 +161,7 @@ public class Waypoint {
         }
         builder.append(longitude)
                 .append(',');
-        if (!noth) {
+        if (!north) {
             builder.append('-');
         }
         builder.append(latitude)
@@ -66,5 +170,15 @@ public class Waypoint {
                 .append(name)
                 .append("\"");
         return builder.toString();
+    }
+
+    private void readObject(ObjectInputStream inputStream) throws ClassNotFoundException, IOException {
+        inputStream.defaultReadObject();
+        
+        validateState();
+    }
+
+    private void writeObject(ObjectOutputStream outputStream) throws IOException {
+        outputStream.defaultWriteObject();
     }
 }
