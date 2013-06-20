@@ -34,21 +34,21 @@ package com.pietervaneeckhout.garmin2vwgps.model;
  * @since 1.0.1
  * @version 1.0.1
  */
-public class WaypointUIModel {
+public class WaypointUI {
     
-    private final boolean export;
+    private final Boolean export;
     private final String name;
     private final String latitude;
     private final String longitude;
 
-    public WaypointUIModel(boolean export, String name, String latitude, String longitude) {
+    public WaypointUI(boolean export, String name, String latitude, String longitude) {
         this.export = export;
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public boolean isExport() {
+    public Boolean isExport() {
         return export;
     }
 

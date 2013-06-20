@@ -58,6 +58,7 @@ public class WaypointController {
     public void toggleWaypointExport(String waypointName){
         Waypoint waypoint = waypointRepository.getWaypoint(waypointName);
         waypoint.toggleExport();
+        waypointRepository.notifyObservers();
     }
     
     public void loadWaypointsFromGarminFile(String filePath) {

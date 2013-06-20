@@ -24,6 +24,7 @@
 package com.pietervaneeckhout.garmin2vwgps;
 
 import com.pietervaneeckhout.garmin2vwgps.controller.WaypointController;
+import com.pietervaneeckhout.garmin2vwgps.controller.repository.WaypointRepository;
 import com.pietervaneeckhout.garmin2vwgps.view.BaseUI;
 import com.pietervaneeckhout.garmin2vwgps.view.GUI;
 
@@ -53,8 +54,11 @@ public class Garmin2VWgps {
      * Constructor
      */
     public Garmin2VWgps() {
-        WaypointController waypointController = new WaypointController();
+        WaypointRepository waypointRepository = new WaypointRepository();
+        WaypointController waypointController = new WaypointController(waypointRepository);
         
         BaseUI ui = new GUI(waypointController);
+        
+        waypointRepository.addObsever(ui);
     }
 }

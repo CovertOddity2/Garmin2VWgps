@@ -25,7 +25,7 @@ package com.pietervaneeckhout.garmin2vwgps.view;
 
 import com.pietervaneeckhout.garmin2vwgps.controller.WaypointController;
 import com.pietervaneeckhout.garmin2vwgps.controller.repository.WaypointRepository;
-import com.pietervaneeckhout.garmin2vwgps.model.WaypointUIModel;
+import com.pietervaneeckhout.garmin2vwgps.model.WaypointUI;
 import com.pietervaneeckhout.garmin2vwgps.util.BaseObserver;
 import java.util.List;
 
@@ -41,7 +41,7 @@ import java.util.List;
  * @since 1.0.0
  * @version 1.0.1
  */
-public abstract class BaseUI extends BaseObserver<WaypointRepository, List<WaypointUIModel>>{
+public abstract class BaseUI extends BaseObserver<WaypointRepository, List<WaypointUI>>{
     
     protected WaypointController waypointController;
 

@@ -181,7 +181,7 @@ public class Waypoint implements Serializable {
         return builder.toString();
     }
     
-    public WaypointUIModel toWaypointUIModel() {
+    public WaypointUI toWaypointUIModel() {
         String latitude, longitude;
         
         if (north) {
@@ -198,7 +198,7 @@ public class Waypoint implements Serializable {
         }
         longitude += this.longitude;
         
-        return new WaypointUIModel(export, name, latitude, longitude);
+        return new WaypointUI(export, name, latitude, longitude);
     }
 
     private void readObject(ObjectInputStream inputStream) throws ClassNotFoundException, IOException {

@@ -24,12 +24,10 @@
 package com.pietervaneeckhout.garmin2vwgps.view;
 
 import com.pietervaneeckhout.garmin2vwgps.controller.WaypointController;
-import com.pietervaneeckhout.garmin2vwgps.controller.repository.WaypointRepository;
-import com.pietervaneeckhout.garmin2vwgps.model.WaypointUIModel;
+import com.pietervaneeckhout.garmin2vwgps.model.WaypointUI;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -38,9 +36,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableModel;
 
 /**
  * GUI.java (UTF-8)
@@ -61,7 +65,7 @@ public class GUI extends BaseUI {
     private final static boolean RIGHT_TO_LEFT = false;
     private JFrame mainFrame;
     private JPanel contentPanel;
-    private JList<WaypointUIModel> waypointList;
+    private WaypointTable waypointTable;
     private JLabel lblInput, lblOutput;
     private JButton btnBrowseInput, btnBrowseOutput, btnLoad, btnExport;
     private JTextField txtInput, txtOutput;
@@ -85,7 +89,7 @@ public class GUI extends BaseUI {
         //intialise elements
         mainFrame = new JFrame("Garmin2Volkswagen");
         contentPanel = new JPanel();
-        waypointList = new JList();
+        waypointTable = new WaypointTable();
         btnBrowseInput = new JButton("Browse");
         btnBrowseOutput = new JButton("Browse");
         btnLoad = new JButton("load");
@@ -95,9 +99,9 @@ public class GUI extends BaseUI {
         lblInput = new JLabel("input file:");
         lblOutput = new JLabel("output file:");
 
-        //list special settings
-        waypointList.setCellRenderer(new WaypointUIModelListRenderer());
-        waypointList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        //table special settings
+        waypointTable.setPreferredScrollableViewportSize(new Dimension(470, 200));
+        waypointTable.setFillsViewportHeight(true);
 
         //build the menu
         buildMenu();
@@ -121,7 +125,7 @@ public class GUI extends BaseUI {
         mainFrame.setVisible(true);
 
         //set sizes
-        Dimension dim = new Dimension(500, 325);
+        Dimension dim = new Dimension(700, 500);
         contentPanel.setMinimumSize(dim);
         contentPanel.setPreferredSize(dim);
         contentPanel.setSize(dim);
@@ -185,7 +189,7 @@ public class GUI extends BaseUI {
         }
 
         contentPanel.setLayout(new GridBagLayout());
-        GridBagConstraints listConstraints = new GridBagConstraints();
+        GridBagConstraints tableConstraints = new GridBagConstraints();
         GridBagConstraints lblInputConstraints = new GridBagConstraints();
         GridBagConstraints txtInputConstraints = new GridBagConstraints();
         GridBagConstraints btnBrowseInputConstraints = new GridBagConstraints();
@@ -197,20 +201,20 @@ public class GUI extends BaseUI {
 
         //list portion
         if (shouldFill) {
-            listConstraints.fill = GridBagConstraints.BOTH;
+            tableConstraints.fill = GridBagConstraints.BOTH;
         }
 
         if (shouldWeightX) {
-            listConstraints.weightx = 0.5;
+            tableConstraints.weightx = 0.5;
         }
         if (shouldWeightY) {
-            listConstraints.weighty = 1.0;
+            tableConstraints.weighty = 1.0;
         }
-        listConstraints.gridx = 0;
-        listConstraints.gridy = 0;
-        listConstraints.gridwidth = 4;
-        listConstraints.insets = new Insets(0, 0, 0, 0);
-        contentPanel.add(new JScrollPane(waypointList), listConstraints);
+        tableConstraints.gridx = 0;
+        tableConstraints.gridy = 0;
+        tableConstraints.gridwidth = 4;
+        tableConstraints.insets = new Insets(0, 0, 0, 0);
+        contentPanel.add(new JScrollPane(waypointTable), tableConstraints);
 
         //file chooser portion
         if (shouldFill) {
@@ -327,8 +331,8 @@ public class GUI extends BaseUI {
     }
 
     private void addActionListeners() {
-        //waypointlist
-        waypointList.addMouseListener(new WaypointUIModelListMouseListener());
+        //waypointTable
+        //TODO
 
         //browseInput
         btnBrowseInput.addActionListener(new BrowseInputListener());
@@ -342,45 +346,90 @@ public class GUI extends BaseUI {
         //export
         btnExport.addActionListener(new ExportOutputListener());
     }
-    
+
     @Override
-    public void update(List<WaypointUIModel> data) {
-        WaypointUIModel[] waypointUIModels = new WaypointUIModel[data.size()];
-        waypointList = new JList<>(data.toArray(waypointUIModels));
-                
-        waypointList.repaint();
-        mainFrame.validate();
-        mainFrame.pack();
-        mainFrame.repaint();
-    }
-
-    // Handles rendering cells in the list using a check box
-    class WaypointUIModelListRenderer extends JCheckBox implements ListCellRenderer {
-
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean hasFocus) {
-            setEnabled(list.isEnabled());
-            setSelected(((WaypointUIModel) value).isExport());
-            setFont(list.getFont());
-            setBackground(list.getBackground());
-            setForeground(list.getForeground());
-            setText(value.toString());
-            return this;
+    public void update(List<WaypointUI> data) {
+        if (waypointTable != null) {
+            waypointTable.setData(data);
+            waypointTable.repaint();
         }
     }
 
-    class WaypointUIModelListMouseListener extends MouseAdapter {
+    class WaypointUITableModel extends AbstractTableModel {
+
+        private final String[] columnNames = {"Export", "Name", "Latitude", "Longgitude"};
+        private List<WaypointUI> data;
+
+        public WaypointUITableModel() {
+            data = new ArrayList<>();
+        }
+
+        public void setData(List<WaypointUI> data) {
+            this.data = data;
+        }
 
         @Override
-        public void mouseClicked(MouseEvent event) {
-            JList list = (JList) event.getSource();
+        public int getRowCount() {
+            return data.size();
+        }
 
-            // Get index of item clicked
-            int index = list.locationToIndex(event.getPoint());
-            WaypointUIModel item = (WaypointUIModel) list.getModel().getElementAt(index);
+        @Override
+        public int getColumnCount() {
+            return columnNames.length;
+        }
 
-            // Toggle selected state
-            waypointController.toggleWaypointExport(item.getName());
+        @Override
+        public String getColumnName(int col) {
+            return columnNames[col];
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            WaypointUI waypoint = data.get(rowIndex);
+
+            switch (columnIndex) {
+                case 0:
+                    return waypoint.isExport();
+                case 1:
+                    return waypoint.getName();
+                case 2:
+                    return waypoint.getLatitude();
+                case 3:
+                    return waypoint.getLongitude();
+                default:
+                    throw new IndexOutOfBoundsException("columnIndex:" + columnIndex + " is out of bounds");
+            }
+        }
+
+        @Override
+        public void setValueAt(Object value, int rowIndex, int columnIndex) {
+            if (columnIndex ==0) {
+                if (value instanceof Boolean) {
+                    waypointController.toggleWaypointExport(data.get(rowIndex).getName());
+                }
+            }
+        }
+
+        @Override
+        public Class getColumnClass(int c) {
+            return getValueAt(0, c).getClass();
+        }
+
+        @Override
+        public boolean isCellEditable(int row, int col) {
+            return (col == 0);
+        }
+    }
+
+    class WaypointTable extends JTable {
+
+        public WaypointTable() {
+            super(new WaypointUITableModel());
+        }
+
+        public void setData(List<WaypointUI> data) {
+            WaypointUITableModel tableModel = (WaypointUITableModel) super.getModel();
+            tableModel.setData(data);
         }
     }
 
