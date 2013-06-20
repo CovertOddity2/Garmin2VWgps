@@ -21,40 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.pietervaneeckhout.garmin2vwgps;
-
-import com.pietervaneeckhout.garmin2vwgps.controller.WaypointController;
-import com.pietervaneeckhout.garmin2vwgps.view.BaseUI;
-import com.pietervaneeckhout.garmin2vwgps.view.GUI;
+package com.pietervaneeckhout.garmin2vwgps.util;
 
 /**
- * Garmin2VWgps.java (UTF-8)
+ * BaseObserver.java (UTF-8)
  *
- * <p>This class is the main class to start this application.</p>
+ * <p>Abstract class for OOP purposes, defines the functions and some default
+ * behaviour of Observer pattern.</p>
  *
- * 2013/06/08
+ * 2013/06/20
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
- * @since 1.0.0
+ * @since 1.0.1
  * @version 1.0.1
  */
-public class Garmin2VWgps {
-
-    /**
-     * Main method
-     * <p/>
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        new Garmin2VWgps();
-    }
-
-    /**
-     * Constructor
-     */
-    public Garmin2VWgps() {
-        WaypointController waypointController = new WaypointController();
-        
-        BaseUI ui = new GUI(waypointController);
+public abstract class BaseObserver<T, U> {
+    
+    protected U data;
+    
+    public void update(U data) {
+        this.data = data;
     }
 }

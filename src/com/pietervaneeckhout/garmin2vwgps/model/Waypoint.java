@@ -37,7 +37,7 @@ import java.io.Serializable;
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
  * @since 1.0.0
- * @version 1.0.0
+ * @version 1.0.1
  */
 public class Waypoint implements Serializable {
 
@@ -45,15 +45,16 @@ public class Waypoint implements Serializable {
     private String name;
     private double longitude, latitude;
     private boolean east, north;
+    private transient boolean export;
 
-    public Waypoint(String name, double longitude, boolean east,
-            double latitude,
-            boolean north) {
+    public Waypoint(String name, double longitude, boolean east, double latitude, boolean north) throws IllegalArgumentException {
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
         this.east = east;
         this.north = north;
+        this.export = true;
+        validateState();
     }
 
     public String getName() {
@@ -129,6 +130,14 @@ public class Waypoint implements Serializable {
         validateLongitude(longitude);
     }
 
+    public boolean isExport() {
+        return export;
+    }
+    
+    public void toggleExport() {
+       this.export ^= true;
+    }
+    
     private void validateNorth(boolean north) throws IllegalArgumentException {
     }
 
@@ -171,11 +180,31 @@ public class Waypoint implements Serializable {
                 .append("\"");
         return builder.toString();
     }
+    
+    public WaypointUIModel toWaypointUIModel() {
+        String latitude, longitude;
+        
+        if (north) {
+            latitude = "N";
+        } else {
+            latitude = "S";
+        }
+        latitude += this.latitude;
+        
+        if(east) {
+            longitude = "E";
+        } else {
+            longitude = "W";
+        }
+        longitude += this.longitude;
+        
+        return new WaypointUIModel(export, name, latitude, longitude);
+    }
 
     private void readObject(ObjectInputStream inputStream) throws ClassNotFoundException, IOException {
         inputStream.defaultReadObject();
-        
         validateState();
+        this.export = false;
     }
 
     private void writeObject(ObjectOutputStream outputStream) throws IOException {

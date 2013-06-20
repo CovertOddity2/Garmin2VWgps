@@ -21,16 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.pietervaneeckhout.garmin2vwgps;
+package com.pietervaneeckhout.garmin2vwgps.view;
 
 import com.pietervaneeckhout.garmin2vwgps.controller.WaypointController;
-import com.pietervaneeckhout.garmin2vwgps.view.BaseUI;
-import com.pietervaneeckhout.garmin2vwgps.view.GUI;
+import com.pietervaneeckhout.garmin2vwgps.controller.repository.WaypointRepository;
+import com.pietervaneeckhout.garmin2vwgps.model.WaypointUIModel;
+import com.pietervaneeckhout.garmin2vwgps.util.BaseObserver;
+import java.util.List;
 
 /**
- * Garmin2VWgps.java (UTF-8)
+ * BaseUI.java (UTF-8)
  *
- * <p>This class is the main class to start this application.</p>
+ * <p>Abstract class for OOP purposes, defines the functions and some default
+ * behaviour of the UI implementations.</p>
  *
  * 2013/06/08
  *
@@ -38,23 +41,25 @@ import com.pietervaneeckhout.garmin2vwgps.view.GUI;
  * @since 1.0.0
  * @version 1.0.1
  */
-public class Garmin2VWgps {
-
-    /**
-     * Main method
-     * <p/>
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        new Garmin2VWgps();
-    }
+public abstract class BaseUI extends BaseObserver<WaypointRepository, List<WaypointUIModel>>{
+    
+    protected WaypointController waypointController;
 
     /**
      * Constructor
+     * 
+     * @param waypointController
      */
-    public Garmin2VWgps() {
-        WaypointController waypointController = new WaypointController();
-        
-        BaseUI ui = new GUI(waypointController);
+    public BaseUI(WaypointController waypointController) {
+        this.waypointController = waypointController;
+    }
+
+    /**
+     * Sets the WaypointController
+     * 
+     * @param waypointController
+     */
+    public final void setWaypointController(WaypointController waypointController) {
+        this.waypointController = waypointController;
     }
 }

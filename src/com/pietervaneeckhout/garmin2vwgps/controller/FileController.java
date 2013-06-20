@@ -26,6 +26,8 @@ package com.pietervaneeckhout.garmin2vwgps.controller;
 import com.pietervaneeckhout.garmin2vwgps.controller.repository.WaypointRepository;
 import com.pietervaneeckhout.garmin2vwgps.model.Waypoint;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,26 +40,25 @@ import java.util.logging.Logger;
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
  * @since 1.0.0
- * @version 1.0.0
+ * @version 1.0.1
  */
 public class FileController {
 
-    private WaypointRepository repository;
-
-    public FileController(WaypointRepository repository) {
-        this.repository = repository;
+    public FileController(){
     }
 
-    public void readGarminWaypointsFromFile(String filePath) {
+    public List<Waypoint> readGarminWaypointsFromFile(String filePath) {
         BufferedReader br = null;
+        List<Waypoint> waypointList = new ArrayList<>();
 
         try {
             FileReader fr = new FileReader(filePath);
             br = new BufferedReader(fr);
             String line;
             while ((line = br.readLine()) != null) {
-                //TODO parse Line
-                throw new UnsupportedOperationException("Not implemented yet");
+                if (line.startsWith("Waypoint")) {
+                    waypointList.add(parseGarminWaypoint(line));
+                }
             }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(FileController.class.getName()).
@@ -75,16 +76,41 @@ public class FileController {
                 }
             }
         }
+        
+        return waypointList;
     }
 
-    public void writeVolkswagenWaypointsToFile(String filePath) {
+    private Waypoint parseGarminWaypoint(String line) {
+        boolean north, east;
+        double longitude, latitude;
+        String name;
+
+        String[] parts = line.split("\\t");
+        String[] position = parts[4].split(" ");
+
+        name = parts[1];
+
+        north = position[0].startsWith("N");
+        east = position[1].startsWith("E");
+
+        latitude = Double.parseDouble(position[0].substring(1));
+        longitude = Double.parseDouble(position[1].substring(1));
+
+        Waypoint waypoint = new Waypoint(name, longitude, east, latitude, north);
+
+        System.out.println(waypoint.toVolkswagenWaypoint());
+
+        return waypoint;
+    }
+
+    public void writeVolkswagenWaypointsToFile(String filePath, List<Waypoint> waypointList) {
         PrintWriter pw = null;
 
         try {
             File file = new File(filePath);
             FileWriter fw = new FileWriter(file);
             pw = new PrintWriter(fw);
-            for (Waypoint waypoint : repository.getWaypoitsToExport()) {
+            for (Waypoint waypoint : waypointList) {
                 pw.println(waypoint.toVolkswagenWaypoint());
             }
         } catch (IOException ex) {

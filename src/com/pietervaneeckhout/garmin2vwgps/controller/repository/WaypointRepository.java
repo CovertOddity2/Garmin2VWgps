@@ -24,8 +24,13 @@
 package com.pietervaneeckhout.garmin2vwgps.controller.repository;
 
 import com.pietervaneeckhout.garmin2vwgps.model.Waypoint;
+import com.pietervaneeckhout.garmin2vwgps.model.WaypointUIModel;
+import com.pietervaneeckhout.garmin2vwgps.util.BaseObservable;
+import com.pietervaneeckhout.garmin2vwgps.util.BaseObserver;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * WaypointRepository.java (UTF-8)
@@ -36,34 +41,58 @@ import java.util.List;
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
  * @since 1.0.0
- * @version 1.0.0
+ * @version 1.0.1
  */
-public class WaypointRepository {
+public class WaypointRepository extends BaseObservable<WaypointRepository, List<WaypointUIModel>> {
 
-    private List<Waypoint> waypoints;
+    private Map<String, Waypoint> waypoints;
 
     public WaypointRepository() {
-        this(new ArrayList<Waypoint>());
+        this(new HashMap<String, Waypoint>());
     }
 
     public WaypointRepository(
-            List<Waypoint> waypoints) {
+            Map<String, Waypoint> waypoints) {
         this.waypoints = waypoints;
     }
 
-    public Iterable<Waypoint> getWaypoitsToExport() {
-        return waypoints;
+    public List<Waypoint> getWaypoitsToExport() {
+        List<Waypoint> exportList = new ArrayList<>();
+        for (Map.Entry<String, Waypoint> entry : waypoints.entrySet()) {
+            Waypoint waypoint = entry.getValue();
+            if (waypoint.isExport()){
+                exportList.add(waypoint);
+            }
+        }
+        return exportList;
     }
 
     public void addWaypoint(Waypoint waypoint) {
-        waypoints.add(waypoint);
+        waypoints.put(waypoint.getName(), waypoint);
     }
 
     public void removeWaypoint(Waypoint waypoint) {
-        waypoints.remove(waypoint);
+        waypoints.remove(waypoint.getName());
+    }
+    
+    public Waypoint getWaypoint(String waypointName) {
+        return waypoints.get(waypointName);
     }
 
     public void clear() {
         waypoints.clear();
+    }
+
+    @Override
+    public void notifyObservers() {
+        List<WaypointUIModel> list = new ArrayList<>();
+        for (Map.Entry<String, Waypoint> entry : waypoints.entrySet()) {
+            Waypoint waypoint = entry.getValue();
+            list.add(waypoint.toWaypointUIModel());
+        }
+        
+        for (BaseObserver<WaypointRepository, List<WaypointUIModel>> obsever : obsevers) {
+            obsever.update(list);
+        }
     }
 }

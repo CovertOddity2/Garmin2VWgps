@@ -24,6 +24,7 @@
 package com.pietervaneeckhout.garmin2vwgps.controller;
 
 import com.pietervaneeckhout.garmin2vwgps.controller.repository.WaypointRepository;
+import com.pietervaneeckhout.garmin2vwgps.model.Waypoint;
 
 /**
  * GPSCoordinateControler.java (UTF-8)
@@ -34,9 +35,38 @@ import com.pietervaneeckhout.garmin2vwgps.controller.repository.WaypointReposito
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
  * @since 1.0.0
- * @version 1.0.0
+ * @version 1.0.1
  */
 public class WaypointController {
 
-    private WaypointRepository repository;
+    private FileController fileController;
+    private WaypointRepository waypointRepository;
+
+    public WaypointController() {
+        this(new WaypointRepository());
+    }
+    
+    public WaypointController(WaypointRepository repository) {
+        this(repository, new FileController());
+    }
+
+    public WaypointController(WaypointRepository waypointRepository, FileController fileController) {
+        this.fileController = fileController;
+        this.waypointRepository = waypointRepository;
+    }
+    
+    public void toggleWaypointExport(String waypointName){
+        Waypoint waypoint = waypointRepository.getWaypoint(waypointName);
+        waypoint.toggleExport();
+    }
+    
+    public void loadWaypointsFromGarminFile(String filePath) {
+        for (Waypoint waypoint : fileController.readGarminWaypointsFromFile(filePath)) {
+            waypointRepository.addWaypoint(waypoint);
+        }
+    }
+    
+    public void writeWaypointsToVolkswagenFile(String filePath) {
+        fileController.writeVolkswagenWaypointsToFile(filePath, waypointRepository.getWaypoitsToExport());
+    }
 }

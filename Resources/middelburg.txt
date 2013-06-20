@@ -1,0 +1,41 @@
+Grid	Lengte/Breedte hddd.ddddd°
+Datum	WGS 84
+
+Header	Name	Description	Type	Position	Altitude	Depth	Proximity	Temperature	Display Mode	Color	Symbol	Facility	City	State	Country	Date Modified	Link	Categories
+
+Waypoint	B4 wp2	Spoorweg	User Waypoint	N51.48355 E3.60570					Symbol & Name	Black	City (Small)							
+Waypoint	B4 wp3	Middelburg	User Waypoint	N51.48452 E3.60642					Symbol & Name	Black	City (Small)							
+Waypoint	B4 wp4	Spoorweg	User Waypoint	N51.48540 E3.60640					Symbol & Name	Black	City (Small)							
+Waypoint	B4 wp5	Spoorweg	User Waypoint	N51.48645 E3.60758					Symbol & Name	Black	City (Small)							
+Waypoint	B4 wp6	Spoorweg	User Waypoint	N51.48853 E3.60792					Symbol & Name	Black	City (Small)							
+Waypoint	B4 wp7	Spoorweg	User Waypoint	N51.48982 E3.60872					Symbol & Name	Black	City (Small)							
+Waypoint	B4 wp8	Spoorweg	User Waypoint	N51.49078 E3.61000					Symbol & Name	Black	City (Small)							
+Waypoint	balken wp1	Industrieterrein Ramsburg	User Waypoint	N51.50010 E3.62243					Symbol & Name	Black	City (Small)							
+Waypoint	balken wp2	Middelburg	User Waypoint	N51.49950 E3.62165					Symbol & Name	Black	City (Small)							
+Waypoint	balken wp3	Middelburg	User Waypoint	N51.49902 E3.62078					Symbol & Name	Black	City (Small)							
+Waypoint	balken wp4	Middelburg	User Waypoint	N51.49927 E3.62235					Symbol & Name	Black	City (Small)							
+Waypoint	balken wp5	Middelburg	User Waypoint	N51.49870 E3.62320					Symbol & Name	Black	City (Small)							
+Waypoint	balken wp6	Middelburg	User Waypoint	N51.49958 E3.62298					Symbol & Name	Black	City (Small)							
+Waypoint	bankjes 1	Schroeweg 4	User Waypoint	N51.49513 E3.62842					Symbol & Name	Black	Pin, Red							
+Waypoint	bankjes 2	Middelburg	User Waypoint	N51.49450 E3.62468					Symbol & Name	Black	Pin, Red							
+Waypoint	bankjes 3	Middelburg	User Waypoint	N51.48880 E3.61757					Symbol & Name	Black	Pin, Red							
+Waypoint	bankjes 4 park	Middelburg	User Waypoint	N51.48295 E3.60562					Symbol & Name	Black	Car							
+Waypoint	bogus	Middelburg	User Waypoint	N51.49727 E3.61638					Symbol & Name	Black	Pin, Red							
+Waypoint	coupure torenw	Middelburg	User Waypoint	N51.49180 E3.63650					Symbol & Name	Black	Pin, Red							
+Waypoint	getijdemolen		User Waypoint	N51.49562 E3.61263					Symbol & Name	Black	Pin, Red							
+Waypoint	kloveniersdoel	Middelburg	User Waypoint	N51.49742 E3.60708					Symbol & Name	Black	Pin, Red							
+Waypoint	koepoort	Middelburg	User Waypoint	N51.50505 E3.61765					Symbol & Name	Black	Pin, Red							
+Waypoint	krabbeneiland		User Waypoint	N51.50047 E3.54653					Symbol & Name	Black	Pin, Red							
+Waypoint	kuiper wp1	Middelburg	User Waypoint	N51.50093 E3.61968					Symbol & Name	Black	Pin, Red							
+Waypoint	kuiper wp2	Middelburg	User Waypoint	N51.50037 E3.61980					Symbol & Name	Black	City (Small)							
+Waypoint	kuiperspoort p	Middelburg	User Waypoint	N51.50045 E3.61748					Symbol & Name	Black	Car							
+Waypoint	molen de hoop		User Waypoint	N51.49430 E3.60732					Symbol & Name	Black	Pin, Red							
+Waypoint	molen hoop par	Poelendaeleweg en De Ruyterstr	User Waypoint	N51.49503 E3.60827					Symbol & Name	Black	Car							
+Waypoint	molenwater	Middelburg	User Waypoint	N51.50423 E3.61538					Symbol & Name	Black	Pin, Red							
+Waypoint	schellach		User Waypoint	N51.52273 E3.62657					Symbol & Name	Black	Pin, Red							
+Waypoint	spinnenhuisweg	Middelburg	User Waypoint	N51.48278 E3.61428					Symbol & Name	Black	Pin, Red							
+Waypoint	stip kaart Mid	Middelburg	User Waypoint	N51.50003 E3.61658					Symbol & Name	Black	Pin, Red							
+Waypoint	vreemde vogel	Industrieterrein	User Waypoint	N51.52285 E3.57583					Symbol & Name	Black	Pin, Red							
+Waypoint	ZEP Middelburg	Middelburg	User Waypoint	N51.47892 E3.63503					Symbol & Name	Black	Pin, Red							
+Waypoint	zicht oostkerk		User Waypoint	N51.50182 E3.62367					Symbol & Name	Black	Pin, Green							
+

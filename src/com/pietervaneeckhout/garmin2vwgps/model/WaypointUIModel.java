@@ -21,19 +21,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.pietervaneeckhout.garmin2vwgps.ui;
+package com.pietervaneeckhout.garmin2vwgps.model;
 
 /**
- * BaseUI.java (UTF-8)
+ * WaypointUIModel.java (UTF-8)
  *
- * <p>Abstract class for OOP purposes, defines the functions and some default
- * behaviour of the UI implementations.</p>
+ * <p>Model for passing waypoints to the ui.</p>
  *
- * 2013/06/08
+ * 2013/06/19
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
- * @since 1.0.0
- * @version 1.0.0
+ * @since 1.0.1
+ * @version 1.0.1
  */
-public class BaseUI {
+public class WaypointUIModel {
+    
+    private final boolean export;
+    private final String name;
+    private final String latitude;
+    private final String longitude;
+
+    public WaypointUIModel(boolean export, String name, String latitude, String longitude) {
+        this.export = export;
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public boolean isExport() {
+        return export;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
 }
