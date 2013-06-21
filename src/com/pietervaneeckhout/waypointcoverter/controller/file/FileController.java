@@ -104,6 +104,15 @@ public class FileController {
 
     public void writeVolkswagenWaypointsToFile(String filePath, List<Waypoint> waypointList) {
         PrintWriter pw = null;
+        
+        if (filePath == null || filePath.isEmpty()) {
+            throw new IllegalArgumentException("filePath cannot be null or empty.");
+        }
+        
+        //auto add file extention
+        if (!filePath.endsWith(".txt")){
+            filePath +=  ".txt";
+        }
 
         try {
             File file = new File(filePath);
