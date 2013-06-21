@@ -29,7 +29,7 @@ import com.pietervaneeckhout.waypointcoverter.view.BaseUI;
 import com.pietervaneeckhout.waypointcoverter.view.GUI;
 
 /**
- * Garmin2VWgps.java (UTF-8)
+ * WaypointConverter.java (UTF-8)
  *
  * <p>This class is the main class to start this application.</p>
  *
@@ -37,9 +37,9 @@ import com.pietervaneeckhout.waypointcoverter.view.GUI;
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
  * @since 1.0.0
- * @version 1.0.1
+ * @version 1.0.2
  */
-public class Garmin2VWgps {
+public class WaypointConverter {
 
     /**
      * Main method
@@ -47,13 +47,13 @@ public class Garmin2VWgps {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new Garmin2VWgps();
+        new WaypointConverter();
     }
 
     /**
      * Constructor
      */
-    public Garmin2VWgps() {
+    public WaypointConverter() {
         WaypointRepository waypointRepository = new WaypointRepository();
         WaypointController waypointController = new WaypointController(waypointRepository);
         

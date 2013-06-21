@@ -25,7 +25,6 @@ package com.pietervaneeckhout.waypointcoverter.view;
 
 import com.pietervaneeckhout.waypointcoverter.controller.WaypointController;
 import com.pietervaneeckhout.waypointcoverter.model.WaypointUI;
-import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -34,17 +33,11 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableModel;
 
 /**
  * GUI.java (UTF-8)
@@ -55,7 +48,7 @@ import javax.swing.table.TableModel;
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
  * @since 1.0.1
- * @version 1.0.1
+ * @version 1.0.2
  */
 public class GUI extends BaseUI {
 
@@ -65,6 +58,7 @@ public class GUI extends BaseUI {
     private final static boolean RIGHT_TO_LEFT = false;
     private JFrame mainFrame;
     private JPanel contentPanel;
+    private JScrollPane tableScrollPane;
     private WaypointTable waypointTable;
     private JLabel lblInput, lblOutput;
     private JButton btnBrowseInput, btnBrowseOutput, btnLoad, btnExport;
@@ -90,6 +84,7 @@ public class GUI extends BaseUI {
         mainFrame = new JFrame("Garmin2Volkswagen");
         contentPanel = new JPanel();
         waypointTable = new WaypointTable();
+        tableScrollPane = new JScrollPane(waypointTable);
         btnBrowseInput = new JButton("Browse");
         btnBrowseOutput = new JButton("Browse");
         btnLoad = new JButton("load");
@@ -125,11 +120,14 @@ public class GUI extends BaseUI {
         mainFrame.setVisible(true);
 
         //set sizes
-        Dimension dim = new Dimension(700, 500);
-        contentPanel.setMinimumSize(dim);
-        contentPanel.setPreferredSize(dim);
-        contentPanel.setSize(dim);
-        mainFrame.setSize(contentPanel.getSize());
+        Dimension minDimension = new Dimension(350, 250);
+        Dimension prefDimension = new Dimension(700, 500);
+        contentPanel.setMinimumSize(minDimension);
+        contentPanel.setPreferredSize(prefDimension);
+        contentPanel.setSize(prefDimension);
+        mainFrame.setMinimumSize(minDimension);
+        mainFrame.setSize(prefDimension);
+        mainFrame.setPreferredSize(prefDimension);
     }
 
     private void buildMenu() {
@@ -214,7 +212,7 @@ public class GUI extends BaseUI {
         tableConstraints.gridy = 0;
         tableConstraints.gridwidth = 4;
         tableConstraints.insets = new Insets(0, 0, 0, 0);
-        contentPanel.add(new JScrollPane(waypointTable), tableConstraints);
+        contentPanel.add(tableScrollPane, tableConstraints);
 
         //file chooser portion
         if (shouldFill) {
@@ -351,7 +349,10 @@ public class GUI extends BaseUI {
     public void update(List<WaypointUI> data) {
         if (waypointTable != null) {
             waypointTable.setData(data);
-            waypointTable.repaint();
+            //waypointTable.revalidate();
+            //waypointTable.repaint();
+            tableScrollPane.revalidate();
+            tableScrollPane.repaint();
         }
     }
 
