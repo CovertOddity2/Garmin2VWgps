@@ -28,4 +28,4 @@ License
 -------
 
 This project is made and distributed under the MIT license.
-The license file can be found [here](https://github.com/pveeckhout/WaypointConverter)
+The license file can be found [here](https://github.com/pveeckhout/WaypointConverter/blob/master/LICENSE.md)
