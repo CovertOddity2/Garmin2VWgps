@@ -25,6 +25,7 @@ package com.pietervaneeckhout.waypointcoverter.view;
 
 import com.pietervaneeckhout.waypointcoverter.controller.DomainFacade;
 import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointController;
+import com.pietervaneeckhout.waypointcoverter.exceptions.FileExistsException;
 import com.pietervaneeckhout.waypointcoverter.model.WaypointUI;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
@@ -36,6 +37,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
@@ -478,8 +481,23 @@ public class GUI extends BaseUI {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            domainFacade.exportWaypoints(txtOutput.getText());
-            JOptionPane.showMessageDialog(mainFrame, "Export completed");
+            try {
+                domainFacade.exportWaypoints(txtOutput.getText(), false);
+                JOptionPane.showMessageDialog(mainFrame, "Export completed", "Export", JOptionPane.INFORMATION_MESSAGE);
+            } catch (FileExistsException ex) {
+                int overwriteResponse = JOptionPane.showConfirmDialog(mainFrame, ex.getMessage()+"\\Do you want to overwrite this file?", "File Exists", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (overwriteResponse == JOptionPane.OK_OPTION) {
+                    try {
+                        domainFacade.exportWaypoints(txtOutput.getText(), true);
+                        JOptionPane.showMessageDialog(mainFrame, "Export completed", "Export", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (FileExistsException ex1) {
+                        JOptionPane.showMessageDialog(mainFrame, "Export Failed: " + ex1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex1);
+                    }
+                } else {
+                     JOptionPane.showMessageDialog(mainFrame, "Export cancelled", "Export", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
         }
     }
 }

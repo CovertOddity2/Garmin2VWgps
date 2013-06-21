@@ -25,6 +25,7 @@ package com.pietervaneeckhout.waypointcoverter.controller;
 
 import com.pietervaneeckhout.waypointcoverter.controller.file.FileController;
 import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointController;
+import com.pietervaneeckhout.waypointcoverter.exceptions.FileExistsException;
 
  /**
  * DomainFacade.java (UTF-8)
@@ -71,7 +72,7 @@ public class DomainFacade {
         waypointController.toggleWaypointExport(waypointName);
     }
     
-    public void exportWaypoints(String filePath) {
-        fileController.writeVolkswagenWaypointsToFile(filePath, waypointController.getWaypointRepository().getWaypoitsToExport());
+    public void exportWaypoints(String filePath, boolean overwrite) throws FileExistsException {
+        fileController.writeOpelWaypointsToFile(filePath, waypointController.getWaypointRepository().getWaypoitsToExport(), overwrite);
     }
 }

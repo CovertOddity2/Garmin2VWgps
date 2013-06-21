@@ -23,6 +23,7 @@
  */
 package com.pietervaneeckhout.waypointcoverter.controller.file;
 
+import com.pietervaneeckhout.waypointcoverter.exceptions.FileExistsException;
 import com.pietervaneeckhout.waypointcoverter.model.Waypoint;
 import java.io.*;
 import java.util.ArrayList;
@@ -101,8 +102,12 @@ public class FileController {
 
         return waypoint;
     }
+    
+    public void writeOpelWaypointsToFile(String filePath, List<Waypoint> waypointList) throws FileExistsException {
+        writeOpelWaypointsToFile(filePath, waypointList, false);
+    }
 
-    public void writeVolkswagenWaypointsToFile(String filePath, List<Waypoint> waypointList) {
+    public void writeOpelWaypointsToFile(String filePath, List<Waypoint> waypointList, boolean overwrite) throws FileExistsException {
         PrintWriter pw = null;
         
         if (filePath == null || filePath.isEmpty()) {
@@ -116,6 +121,11 @@ public class FileController {
 
         try {
             File file = new File(filePath);
+            
+            if (file.exists() && !overwrite) {
+                throw new FileExistsException(filePath +" already exists");
+            }
+            
             FileWriter fw = new FileWriter(file);
             pw = new PrintWriter(fw);
             for (Waypoint waypoint : waypointList) {
