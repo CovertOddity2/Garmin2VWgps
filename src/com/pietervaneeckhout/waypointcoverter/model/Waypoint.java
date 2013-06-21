@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.pietervaneeckhout.garmin2vwgps.model;
+package com.pietervaneeckhout.waypointcoverter.model;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

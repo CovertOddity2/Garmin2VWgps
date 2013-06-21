@@ -21,38 +21,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.pietervaneeckhout.garmin2vwgps.util;
+package com.pietervaneeckhout.waypointcoverter;
 
-import java.util.List;
+import com.pietervaneeckhout.waypointcoverter.controller.WaypointController;
+import com.pietervaneeckhout.waypointcoverter.controller.repository.WaypointRepository;
+import com.pietervaneeckhout.waypointcoverter.view.BaseUI;
+import com.pietervaneeckhout.waypointcoverter.view.GUI;
 
 /**
- * BaseObservable.java (UTF-8)
+ * Garmin2VWgps.java (UTF-8)
  *
- * <p>Abstract class for OOP purposes, defines the functions and some default
- * behaviour of Observer pattern.</p>
+ * <p>This class is the main class to start this application.</p>
  *
- * 2013/06/20
+ * 2013/06/08
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
- * @since 1.0.1
+ * @since 1.0.0
  * @version 1.0.1
  */
-public abstract class BaseObservable<T,U> {
-    
-    protected List<BaseObserver<T,U>> obsevers;
-    
-    public void addObsever(BaseObserver<T,U> obsever) {
-        obsevers.add(obsever);
-        notifyObservers();
+public class Garmin2VWgps {
+
+    /**
+     * Main method
+     * <p/>
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        new Garmin2VWgps();
     }
-    
-    public void removeObsever(BaseObserver<T,U> obsever) {
-        obsevers.remove(obsever);
+
+    /**
+     * Constructor
+     */
+    public Garmin2VWgps() {
+        WaypointRepository waypointRepository = new WaypointRepository();
+        WaypointController waypointController = new WaypointController(waypointRepository);
+        
+        BaseUI ui = new GUI(waypointController);
+        
+        waypointRepository.addObsever(ui);
     }
-    
-    public void clearObservers() {
-        obsevers.clear();
-    }
-    
-    public abstract void notifyObservers();
 }

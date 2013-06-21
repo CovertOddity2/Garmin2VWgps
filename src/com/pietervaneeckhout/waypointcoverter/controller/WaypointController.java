@@ -21,10 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.pietervaneeckhout.garmin2vwgps.controller;
+package com.pietervaneeckhout.waypointcoverter.controller;
 
-import com.pietervaneeckhout.garmin2vwgps.controller.repository.WaypointRepository;
-import com.pietervaneeckhout.garmin2vwgps.model.Waypoint;
+import com.pietervaneeckhout.waypointcoverter.controller.repository.WaypointRepository;
+import com.pietervaneeckhout.waypointcoverter.model.Waypoint;
 
 /**
  * GPSCoordinateControler.java (UTF-8)

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.pietervaneeckhout.garmin2vwgps.util;
+package com.pietervaneeckhout.waypointcoverter.util;
 
 /**
  * BaseObserver.java (UTF-8)

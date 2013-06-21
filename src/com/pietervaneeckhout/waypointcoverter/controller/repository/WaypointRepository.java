@@ -21,12 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.pietervaneeckhout.garmin2vwgps.controller.repository;
+package com.pietervaneeckhout.waypointcoverter.controller.repository;
 
-import com.pietervaneeckhout.garmin2vwgps.model.Waypoint;
-import com.pietervaneeckhout.garmin2vwgps.model.WaypointUI;
-import com.pietervaneeckhout.garmin2vwgps.util.BaseObservable;
-import com.pietervaneeckhout.garmin2vwgps.util.BaseObserver;
+import com.pietervaneeckhout.waypointcoverter.model.Waypoint;
+import com.pietervaneeckhout.waypointcoverter.model.WaypointUI;
+import com.pietervaneeckhout.waypointcoverter.util.BaseObservable;
+import com.pietervaneeckhout.waypointcoverter.util.BaseObserver;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
