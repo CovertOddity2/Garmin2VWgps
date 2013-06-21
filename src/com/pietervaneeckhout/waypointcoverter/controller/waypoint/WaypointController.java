@@ -21,10 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.pietervaneeckhout.waypointcoverter.controller;
+package com.pietervaneeckhout.waypointcoverter.controller.waypoint;
 
-import com.pietervaneeckhout.waypointcoverter.controller.repository.WaypointRepository;
+import com.pietervaneeckhout.waypointcoverter.controller.file.FileController;
 import com.pietervaneeckhout.waypointcoverter.model.Waypoint;
+import java.util.Collection;
 
 /**
  * GPSCoordinateControler.java (UTF-8)
@@ -35,39 +36,41 @@ import com.pietervaneeckhout.waypointcoverter.model.Waypoint;
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
  * @since 1.0.0
- * @version 1.0.1
+ * @version 1.0.2
  */
 public class WaypointController {
-
-    private FileController fileController;
+    
     private WaypointRepository waypointRepository;
 
     public WaypointController() {
         this(new WaypointRepository());
     }
     
-    public WaypointController(WaypointRepository repository) {
-        this(repository, new FileController());
-    }
-
-    public WaypointController(WaypointRepository waypointRepository, FileController fileController) {
-        this.fileController = fileController;
+    public WaypointController(WaypointRepository waypointRepository) {
         this.waypointRepository = waypointRepository;
     }
-    
+
+    public WaypointRepository getWaypointRepository() {
+        return waypointRepository;
+    }
+
+    public void setWaypointRepository(WaypointRepository waypointRepository) {
+        this.waypointRepository = waypointRepository;
+    }
+        
     public void toggleWaypointExport(String waypointName){
         Waypoint waypoint = waypointRepository.getWaypoint(waypointName);
         waypoint.toggleExport();
         waypointRepository.notifyObservers();
     }
     
-    public void loadWaypointsFromGarminFile(String filePath) {
-        for (Waypoint waypoint : fileController.readGarminWaypointsFromFile(filePath)) {
-            waypointRepository.addWaypoint(waypoint);
-        }
+    public void addWayPoint(Waypoint waypoint) {
+        waypointRepository.addWaypoint(waypoint);
     }
     
-    public void writeWaypointsToVolkswagenFile(String filePath) {
-        fileController.writeVolkswagenWaypointsToFile(filePath, waypointRepository.getWaypoitsToExport());
+    public void addWaypoints(Collection<Waypoint> waypoints) {
+        for (Waypoint waypoint : waypoints) {
+            this.addWayPoint(waypoint);
+        }
     }
 }

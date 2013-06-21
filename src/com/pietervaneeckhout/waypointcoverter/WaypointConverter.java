@@ -23,8 +23,10 @@
  */
 package com.pietervaneeckhout.waypointcoverter;
 
-import com.pietervaneeckhout.waypointcoverter.controller.WaypointController;
-import com.pietervaneeckhout.waypointcoverter.controller.repository.WaypointRepository;
+import com.pietervaneeckhout.waypointcoverter.controller.DomainFacade;
+import com.pietervaneeckhout.waypointcoverter.controller.file.FileController;
+import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointController;
+import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointRepository;
 import com.pietervaneeckhout.waypointcoverter.view.BaseUI;
 import com.pietervaneeckhout.waypointcoverter.view.GUI;
 
@@ -56,8 +58,10 @@ public class WaypointConverter {
     public WaypointConverter() {
         WaypointRepository waypointRepository = new WaypointRepository();
         WaypointController waypointController = new WaypointController(waypointRepository);
+        FileController fileController = new FileController();
+        DomainFacade domainFacade = new DomainFacade(waypointController, fileController);
         
-        BaseUI ui = new GUI(waypointController);
+        BaseUI ui = new GUI(domainFacade);
         
         waypointRepository.addObsever(ui);
     }

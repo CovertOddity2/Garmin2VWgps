@@ -23,7 +23,8 @@
  */
 package com.pietervaneeckhout.waypointcoverter.view;
 
-import com.pietervaneeckhout.waypointcoverter.controller.WaypointController;
+import com.pietervaneeckhout.waypointcoverter.controller.DomainFacade;
+import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointController;
 import com.pietervaneeckhout.waypointcoverter.model.WaypointUI;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
@@ -67,8 +68,8 @@ public class GUI extends BaseUI {
     private JMenu fileMenu, settingsMenu, infoMenu;
     private JMenuItem resetMenuItem, helpMenuItem, sourceMenuItem, licenseMenuItem, exitMenuItem;
 
-    public GUI(WaypointController waypointController) {
-        super(waypointController);
+    public GUI(DomainFacade domainFacade) {
+        super(domainFacade);
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -406,7 +407,7 @@ public class GUI extends BaseUI {
         public void setValueAt(Object value, int rowIndex, int columnIndex) {
             if (columnIndex ==0) {
                 if (value instanceof Boolean) {
-                    waypointController.toggleWaypointExport(data.get(rowIndex).getName());
+                   domainFacade.toggleWaypointExport(data.get(rowIndex).getName());
                 }
             }
         }
@@ -446,7 +447,7 @@ public class GUI extends BaseUI {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 String filePath = fileChooser.getSelectedFile().getAbsolutePath();
                 txtInput.setText(filePath);
-                waypointController.loadWaypointsFromGarminFile(filePath);
+                domainFacade.loadFile(filePath);
             }
         }
     }
@@ -455,7 +456,7 @@ public class GUI extends BaseUI {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            waypointController.loadWaypointsFromGarminFile(txtInput.getText());
+            domainFacade.loadFile(txtInput.getText());
         }
     }
 
@@ -477,7 +478,7 @@ public class GUI extends BaseUI {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            waypointController.writeWaypointsToVolkswagenFile(txtOutput.getText());
+            domainFacade.exportWaypoints(txtOutput.getText());
         }
     }
 }

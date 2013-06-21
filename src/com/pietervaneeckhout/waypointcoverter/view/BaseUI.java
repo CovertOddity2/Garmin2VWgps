@@ -23,8 +23,9 @@
  */
 package com.pietervaneeckhout.waypointcoverter.view;
 
-import com.pietervaneeckhout.waypointcoverter.controller.WaypointController;
-import com.pietervaneeckhout.waypointcoverter.controller.repository.WaypointRepository;
+import com.pietervaneeckhout.waypointcoverter.controller.DomainFacade;
+import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointController;
+import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointRepository;
 import com.pietervaneeckhout.waypointcoverter.model.WaypointUI;
 import com.pietervaneeckhout.waypointcoverter.util.BaseObserver;
 import java.util.List;
@@ -43,23 +44,18 @@ import java.util.List;
  */
 public abstract class BaseUI extends BaseObserver<WaypointRepository, List<WaypointUI>>{
     
-    protected WaypointController waypointController;
+    protected DomainFacade domainFacade;
 
     /**
      * Constructor
      * 
-     * @param waypointController
+     * @param domainFacade
      */
-    public BaseUI(WaypointController waypointController) {
-        this.waypointController = waypointController;
+    public BaseUI(DomainFacade domainFacade) {
+        this.domainFacade = domainFacade;
     }
 
-    /**
-     * Sets the WaypointController
-     * 
-     * @param waypointController
-     */
-    public final void setWaypointController(WaypointController waypointController) {
-        this.waypointController = waypointController;
+    public void setDomainFacade(DomainFacade domainFacade) {
+        this.domainFacade = domainFacade;
     }
 }

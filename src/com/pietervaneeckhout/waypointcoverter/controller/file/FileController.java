@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.pietervaneeckhout.waypointcoverter.controller;
+package com.pietervaneeckhout.waypointcoverter.controller.file;
 
 import com.pietervaneeckhout.waypointcoverter.model.Waypoint;
 import java.io.*;
@@ -39,7 +39,7 @@ import java.util.logging.Logger;
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
  * @since 1.0.0
- * @version 1.0.1
+ * @version 1.0.2
  */
 public class FileController {
 

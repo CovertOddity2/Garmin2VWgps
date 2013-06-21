@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.pietervaneeckhout.waypointcoverter.controller.repository;
+package com.pietervaneeckhout.waypointcoverter.controller.waypoint;
 
 import com.pietervaneeckhout.waypointcoverter.model.Waypoint;
 import com.pietervaneeckhout.waypointcoverter.model.WaypointUI;
@@ -41,7 +41,7 @@ import java.util.Map;
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
  * @since 1.0.0
- * @version 1.0.1
+ * @version 1.0.2
  */
 public class WaypointRepository extends BaseObservable<WaypointRepository, List<WaypointUI>> {
 
