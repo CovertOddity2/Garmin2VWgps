@@ -479,6 +479,7 @@ public class GUI extends BaseUI {
         @Override
         public void actionPerformed(ActionEvent e) {
             domainFacade.exportWaypoints(txtOutput.getText());
+            JOptionPane.showMessageDialog(mainFrame, "Export completed");
         }
     }
 }
