@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 
 /**
  * Waypoint.java (UTF-8)
@@ -163,17 +164,18 @@ public class Waypoint implements Serializable {
         }
     }
 
-    public String toVolkswagenWaypoint() {
+    public String toOpelWaypoint() {
+        DecimalFormat decimalFormat = new DecimalFormat("###.000000");
         StringBuilder builder = new StringBuilder();
         if (!east) {
             builder.append('-');
         }
-        builder.append(longitude)
+        builder.append(decimalFormat.format(longitude))
                 .append(',');
         if (!north) {
             builder.append('-');
         }
-        builder.append(latitude)
+        builder.append(decimalFormat.format(latitude))
                 .append(',');
         builder.append("\"")
                 .append(name)
@@ -182,23 +184,24 @@ public class Waypoint implements Serializable {
     }
     
     public WaypointUI toWaypointUIModel() {
-        String latitude, longitude;
+        DecimalFormat decimalFormat = new DecimalFormat("###.000000");
+        String latitudeString, longitudeString;
         
         if (north) {
-            latitude = "N";
+            latitudeString = "N";
         } else {
-            latitude = "S";
+            latitudeString = "S";
         }
-        latitude += this.latitude;
+        latitudeString += decimalFormat.format(this.latitude);
         
         if(east) {
-            longitude = "E";
+            longitudeString = "E";
         } else {
-            longitude = "W";
+            longitudeString = "W";
         }
-        longitude += this.longitude;
+        longitudeString += decimalFormat.format(this.longitude);
         
-        return new WaypointUI(export, name, latitude, longitude);
+        return new WaypointUI(export, name, latitudeString, longitudeString);
     }
 
     private void readObject(ObjectInputStream inputStream) throws ClassNotFoundException, IOException {

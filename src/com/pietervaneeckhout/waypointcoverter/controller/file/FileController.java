@@ -97,7 +97,7 @@ public class FileController {
 
         Waypoint waypoint = new Waypoint(name, longitude, east, latitude, north);
 
-        System.out.println(waypoint.toVolkswagenWaypoint());
+        System.out.println(waypoint.toOpelWaypoint());
 
         return waypoint;
     }
@@ -119,7 +119,7 @@ public class FileController {
             FileWriter fw = new FileWriter(file);
             pw = new PrintWriter(fw);
             for (Waypoint waypoint : waypointList) {
-                pw.println(waypoint.toVolkswagenWaypoint());
+                pw.println(waypoint.toOpelWaypoint());
             }
         } catch (IOException ex) {
             Logger.getLogger(FileController.class.getName()).
