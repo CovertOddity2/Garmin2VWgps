@@ -23,9 +23,9 @@
  */
 package com.pietervaneeckhout.waypointcoverter.controller.waypoint;
 
-import com.pietervaneeckhout.waypointcoverter.controller.file.FileController;
 import com.pietervaneeckhout.waypointcoverter.model.Waypoint;
 import java.util.Collection;
+import org.apache.log4j.Logger;
 
 /**
  * GPSCoordinateControler.java (UTF-8)
@@ -41,12 +41,14 @@ import java.util.Collection;
 public class WaypointController {
     
     private WaypointRepository waypointRepository;
+    private Logger logger;
 
     public WaypointController() {
         this(new WaypointRepository());
     }
     
     public WaypointController(WaypointRepository waypointRepository) {
+        logger = Logger.getLogger(WaypointController.class);
         this.waypointRepository = waypointRepository;
     }
 
@@ -59,9 +61,7 @@ public class WaypointController {
     }
         
     public void toggleWaypointExport(String waypointName){
-        Waypoint waypoint = waypointRepository.getWaypoint(waypointName);
-        waypoint.toggleExport();
-        waypointRepository.notifyObservers();
+       waypointRepository.toggleWaypointExport(waypointName);
     }
     
     public void addWayPoint(Waypoint waypoint) {

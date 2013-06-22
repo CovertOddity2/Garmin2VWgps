@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.log4j.Logger;
 
 /**
  * WaypointRepository.java (UTF-8)
@@ -46,6 +47,7 @@ import java.util.Map;
 public class WaypointRepository extends BaseObservable<WaypointRepository, List<WaypointUI>> {
 
     private Map<String, Waypoint> waypoints;
+    private Logger logger;
 
     public WaypointRepository() {
         this(new HashMap<String, Waypoint>());
@@ -53,6 +55,7 @@ public class WaypointRepository extends BaseObservable<WaypointRepository, List<
 
     public WaypointRepository(Map<String, Waypoint> waypoints) {
         super();
+        logger = Logger.getLogger(WaypointRepository.class);
         obsevers = new ArrayList<>();
         this.waypoints = waypoints;
     }
@@ -65,6 +68,7 @@ public class WaypointRepository extends BaseObservable<WaypointRepository, List<
                 exportList.add(waypoint);
             }
         }
+        logger.debug("waypoints set for export: " + exportList.size());
         return exportList;
     }
 
@@ -74,14 +78,25 @@ public class WaypointRepository extends BaseObservable<WaypointRepository, List<
     }
 
     public void removeWaypoint(Waypoint waypoint) {
-        waypoints.remove(waypoint.getName());
+        if (waypoints.containsKey(waypoint.getName())) {
+            waypoints.remove(waypoint.getName());
+        } else {
+            logger.debug("removing waypoint failed: " + waypoint.getName() + " not found in the collections");
+        }
     }
 
-    public Waypoint getWaypoint(String waypointName) {
-        return waypoints.get(waypointName);
+    public Waypoint getWaypoint(String waypointName) throws IllegalArgumentException {
+        if (waypoints.containsKey(waypointName)) {
+            return waypoints.get(waypointName);
+        } else {
+            String errorMessage = "retreiving waypoint failed: " + waypointName + " not found in the collections";
+            logger.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
     }
 
     public void clear() {
+        logger.debug("removing all waypoints");
         waypoints.clear();
         notifyObservers();
     }
@@ -97,5 +112,10 @@ public class WaypointRepository extends BaseObservable<WaypointRepository, List<
         for (BaseObserver<WaypointRepository, List<WaypointUI>> obsever : obsevers) {
             obsever.update(list);
         }
+    }
+
+    public void toggleWaypointExport(String waypointName) throws IllegalArgumentException {
+        getWaypoint(waypointName).toggleExport();
+        notifyObservers();
     }
 }

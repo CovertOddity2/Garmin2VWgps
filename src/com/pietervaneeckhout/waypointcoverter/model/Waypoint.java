@@ -28,6 +28,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import org.apache.log4j.Logger;
 
 /**
  * Waypoint.java (UTF-8)
@@ -47,6 +48,7 @@ public class Waypoint implements Serializable {
     private double longitude, latitude;
     private boolean east, north;
     private transient boolean export;
+    private Logger logger;
 
     public Waypoint(String name, double longitude, boolean east, double latitude, boolean north) throws IllegalArgumentException {
         this.name = name;
@@ -55,6 +57,7 @@ public class Waypoint implements Serializable {
         this.east = east;
         this.north = north;
         this.export = true;
+        logger = Logger.getLogger(Waypoint.class);
         validateState();
     }
 
@@ -137,6 +140,7 @@ public class Waypoint implements Serializable {
     
     public void toggleExport() {
        this.export ^= true;
+       logger.debug("exporting waypoint " + name +": " + export);
     }
     
     private void validateNorth(boolean north) throws IllegalArgumentException {
@@ -148,18 +152,23 @@ public class Waypoint implements Serializable {
     private void validateName(String name) throws IllegalArgumentException {
         boolean nameHasContent = (name != null) && (!name.equals(""));
         if (!nameHasContent) {
+            logger.error("waypoint name is empty or null");
             throw new IllegalArgumentException("Names must be non-null and non-empty.");
         }
     }
 
     private void validateLongitude(double longitude) throws IllegalArgumentException {
         if (longitude < 0 || longitude > 180) {
+            logger.error("Longitude must be between 0 and 180");
+            logger.debug("longitude: " + longitude);
             throw new IllegalArgumentException("Longitude must be between 0 and 180");
         }
     }
 
     private void validateLatitude(double latitude) throws IllegalArgumentException {
         if (latitude < 0 || latitude > 180) {
+            logger.error("Latitude must be between 0 and 180");
+            logger.debug("latitude: " + latitude);
             throw new IllegalArgumentException("Latitude must be between 0 and 180");
         }
     }
@@ -181,6 +190,10 @@ public class Waypoint implements Serializable {
                 .append(name)
                 .append("\"");
         return builder.toString();
+    }
+    
+    public String toString() {
+        return toWaypointUIModel().toString();
     }
     
     public WaypointUI toWaypointUIModel() {

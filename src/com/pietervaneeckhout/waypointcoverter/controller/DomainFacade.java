@@ -25,12 +25,18 @@ package com.pietervaneeckhout.waypointcoverter.controller;
 
 import com.pietervaneeckhout.waypointcoverter.controller.file.FileController;
 import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointController;
+import com.pietervaneeckhout.waypointcoverter.exceptions.FatalException;
 import com.pietervaneeckhout.waypointcoverter.exceptions.FileExistsException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
- /**
+/**
  * DomainFacade.java (UTF-8)
  *
- * <p>Entry point into the domain layer. Delegates and coordinates the tasks to the respective controllers</p>
+ * <p>Entry point into the domain layer. Delegates and coordinates the tasks to
+ * the respective controllers</p>
  *
  * 2013/06/21
  *
@@ -39,7 +45,7 @@ import com.pietervaneeckhout.waypointcoverter.exceptions.FileExistsException;
  * @version 1.0.2
  */
 public class DomainFacade {
-    
+
     private WaypointController waypointController;
     private FileController fileController;
 
@@ -63,16 +69,16 @@ public class DomainFacade {
     public void setFileController(FileController fileController) {
         this.fileController = fileController;
     }
-    
-    public void loadFile(String filePath) {
+
+    public void loadFile(String filePath) throws FileNotFoundException, IOException, FatalException {
         waypointController.addWaypoints(fileController.readGarminWaypointsFromFile(filePath));
     }
-    
-    public void toggleWaypointExport(String waypointName) {
+
+    public void toggleWaypointExport(String waypointName) throws IllegalArgumentException {
         waypointController.toggleWaypointExport(waypointName);
     }
-    
-    public void exportWaypoints(String filePath, boolean overwrite) throws FileExistsException {
+
+    public void exportWaypoints(String filePath, boolean overwrite) throws FileExistsException, IOException {
         fileController.writeOpelWaypointsToFile(filePath, waypointController.getWaypointRepository().getWaypoitsToExport(), overwrite);
     }
 }

@@ -63,4 +63,15 @@ public class WaypointUI {
     public String getLongitude() {
         return longitude;
     }
+    
+    @Override
+    public String toString() {
+        String output;
+        if (export) {
+            output = "export";
+        } else {
+            output = "withhold";
+        }
+        return output + " " + name + " " + latitude + " " + longitude;
+    }
 }

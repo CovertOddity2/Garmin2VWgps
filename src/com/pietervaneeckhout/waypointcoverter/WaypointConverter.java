@@ -29,6 +29,8 @@ import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointContro
 import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointRepository;
 import com.pietervaneeckhout.waypointcoverter.view.BaseUI;
 import com.pietervaneeckhout.waypointcoverter.view.GUI;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 /**
  * WaypointConverter.java (UTF-8)
@@ -42,6 +44,8 @@ import com.pietervaneeckhout.waypointcoverter.view.GUI;
  * @version 1.0.2
  */
 public class WaypointConverter {
+    
+    private Logger logger;
 
     /**
      * Main method
@@ -56,13 +60,29 @@ public class WaypointConverter {
      * Constructor
      */
     public WaypointConverter() {
+        
+        //load log4j.properties file.
+        PropertyConfigurator.configure("settings/log4j.properties");
+        
+        //make logger
+        logger = Logger.getLogger(WaypointConverter.class);
+        
+        logger.trace("creating waypoint repository");
         WaypointRepository waypointRepository = new WaypointRepository();
+        
+        logger.trace("creating waypoint controller");
         WaypointController waypointController = new WaypointController(waypointRepository);
+        
+        logger.trace("creating file controller");
         FileController fileController = new FileController();
+        
+        logger.trace("creating domain facade");
         DomainFacade domainFacade = new DomainFacade(waypointController, fileController);
         
+        logger.trace("creating GUI");
         BaseUI ui = new GUI(domainFacade);
         
+        logger.trace("adding ui as waypoint repository obsever");
         waypointRepository.addObsever(ui);
     }
 }

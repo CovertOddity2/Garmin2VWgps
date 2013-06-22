@@ -24,7 +24,7 @@
 package com.pietervaneeckhout.waypointcoverter.view;
 
 import com.pietervaneeckhout.waypointcoverter.controller.DomainFacade;
-import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointController;
+import com.pietervaneeckhout.waypointcoverter.exceptions.FatalException;
 import com.pietervaneeckhout.waypointcoverter.exceptions.FileExistsException;
 import com.pietervaneeckhout.waypointcoverter.model.WaypointUI;
 import java.awt.ComponentOrientation;
@@ -35,6 +35,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -450,7 +452,13 @@ public class GUI extends BaseUI {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 String filePath = fileChooser.getSelectedFile().getAbsolutePath();
                 txtInput.setText(filePath);
-                domainFacade.loadFile(filePath);
+                try {
+                    domainFacade.loadFile(filePath);
+                } catch (IOException ex) {
+                    //TODO
+                } catch (FatalException ex) {
+                    JOptionPane.showMessageDialog(mainFrame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
     }
@@ -459,7 +467,13 @@ public class GUI extends BaseUI {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            domainFacade.loadFile(txtInput.getText());
+            try {
+                domainFacade.loadFile(txtInput.getText());
+            } catch (IOException ex) {
+                    //TODO
+                } catch (FatalException ex) {
+                    JOptionPane.showMessageDialog(mainFrame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
         }
     }
 
@@ -490,13 +504,14 @@ public class GUI extends BaseUI {
                     try {
                         domainFacade.exportWaypoints(txtOutput.getText(), true);
                         JOptionPane.showMessageDialog(mainFrame, "Export completed", "Export", JOptionPane.INFORMATION_MESSAGE);
-                    } catch (FileExistsException ex1) {
+                    } catch (IOException ex1) {
                         JOptionPane.showMessageDialog(mainFrame, "Export Failed: " + ex1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                        Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex1);
                     }
                 } else {
                      JOptionPane.showMessageDialog(mainFrame, "Export cancelled", "Export", JOptionPane.INFORMATION_MESSAGE);
                 }
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(mainFrame, "Export Failed: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

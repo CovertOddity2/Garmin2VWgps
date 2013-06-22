@@ -23,10 +23,8 @@
  */
 package com.pietervaneeckhout.waypointcoverter.exceptions;
 
-import java.io.IOException;
-
 /**
- * FileExistsException.java (UTF-8)
+ * FatalException.java (UTF-8)
  *
  * <p>Custom Exception for notifying the UI an file exists.</p>
  *
@@ -36,21 +34,21 @@ import java.io.IOException;
  * @since 1.0.2
  * @version 1.0.2
  */
-public class FileExistsException extends IOException {
+public class FatalException extends Exception {
 
-    public FileExistsException(String string) {
+    public FatalException(String string) {
         super(string);
     }
 
-    public FileExistsException() {
+    public FatalException() {
         super();
     }
 
-    public FileExistsException(String message, Throwable cause) {
+    public FatalException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public FileExistsException(Throwable cause) {
+    public FatalException(Throwable cause) {
         super(cause);
     }
 }
