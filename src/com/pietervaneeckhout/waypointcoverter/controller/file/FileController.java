@@ -31,6 +31,7 @@ import com.pietervaneeckhout.waypointcoverter.exceptions.ParseException;
 import com.pietervaneeckhout.waypointcoverter.model.Waypoint;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import org.apache.log4j.Logger;
@@ -108,16 +109,40 @@ public class FileController {
 
         name = parts[1];
 
-        north = position[0].startsWith("N");
-        east = position[1].startsWith("E");
+        try {
+            if (position.length == 2) {
+                logger.info("recognized digital coordinate format");
+                north = position[0].startsWith("N");
+                east = position[1].startsWith("E");
 
-        latitude = Double.parseDouble(position[0].substring(1));
-        longitude = Double.parseDouble(position[1].substring(1));
+                latitude = Double.parseDouble(position[0].substring(1));
+                longitude = Double.parseDouble(position[1].substring(1));
+            } else if (position.length == 4) {
+                logger.info("recognized degree coordinate format");
+                north = position[0].startsWith("N");
+                east = position[2].startsWith("E");
+
+                latitude = Double.parseDouble(position[0].substring(1));
+                latitude += Double.parseDouble(position[1])/60;
+                longitude = Double.parseDouble(position[2].substring(1));
+                longitude += Double.parseDouble(position[3])/60;
+            } else {
+                String errorString = "There was a problem parsing the waypoint: could not parse The coordinate formatting";
+                logger.error(errorString);
+                logger.debug(Arrays.deepToString(position));
+                throw new ParseException(errorString);
+            }
+        } catch (NumberFormatException e) {
+            String errorString = "There was a problem parsing the waypoint: could not parse The coordinate formatting";
+            logger.error(errorString);
+            logger.debug(e.getMessage());
+            throw new ParseException(errorString);
+        }
 
         Waypoint waypoint = null;
 
         try {
-        waypoint = new Waypoint(name, longitude, east, latitude, north);
+            waypoint = new Waypoint(name, longitude, east, latitude, north);
         } catch (InvalidModelStateException ex) {
             throw new ParseException("There was a problem parsing the waypoint: " + ex.getMessage());
         }
