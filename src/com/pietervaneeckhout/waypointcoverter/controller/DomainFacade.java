@@ -76,7 +76,7 @@ public class DomainFacade {
 
     public void loadFile(String filePath) throws FileException, FatalException, ProcessingException {
         try {
-            waypointController.addWaypoints(fileController.readGarminWaypointsFromFile(filePath));
+            waypointController.addWaypoints(fileController.readWaypointsFromFile(filePath));
 
         } catch (WaypointAlreadyExistsException | InvalidModelStateException | ParseException ex) {
             throw new ProcessingException(ex.getMessage());

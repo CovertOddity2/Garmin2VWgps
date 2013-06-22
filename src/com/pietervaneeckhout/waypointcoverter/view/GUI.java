@@ -86,7 +86,7 @@ public class GUI extends BaseUI {
 
     private void initGUI() {
         //intialise elements
-        mainFrame = new JFrame("Garmin2Volkswagen");
+        mainFrame = new JFrame("WaypointConverter");
         contentPanel = new JPanel();
         waypointTable = new WaypointTable();
         tableScrollPane = new JScrollPane(waypointTable);

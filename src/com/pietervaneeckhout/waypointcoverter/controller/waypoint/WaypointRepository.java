@@ -119,7 +119,7 @@ public class WaypointRepository extends BaseObservable<WaypointRepository, List<
 
                 list.add(waypoint.toWaypointUIModel());
             }
-
+            
             for (BaseObserver<WaypointRepository, List<WaypointUI>> obsever : obsevers) {
                 obsever.update(list);
             }

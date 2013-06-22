@@ -33,8 +33,15 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * GPSCoordinateControler.java (UTF-8)
@@ -55,48 +62,20 @@ public class FileController {
         logger = Logger.getLogger("FILE");
     }
 
-    public List<Waypoint> readGarminWaypointsFromFile(String filePath) throws FileException, FatalException, InvalidModelStateException, ParseException {
-        BufferedReader br = null;
-        List<Waypoint> waypointList = new ArrayList<>();
+    public List<Waypoint> readWaypointsFromFile(String filePath) throws FileException, FatalException, InvalidModelStateException, ParseException {
 
         if (filePath == null || filePath.isEmpty()) {
             logger.error("inputtput file path is empty or null");
             throw new InvalidModelStateException("intput filePath cannot be null or empty");
         }
 
-        try {
-            FileReader fr = new FileReader(filePath);
-            br = new BufferedReader(fr);
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.startsWith("Waypoint")) {
-                    waypointList.add(parseGarminMapsourceTxtWaypoint(line));
-                }
-            }
-        } catch (FileNotFoundException e) {
-            String error = "The requested file was not found";
-            logger.error(error);
-            logger.debug(e.getMessage());
-            throw new FileException(error);
-        } catch (IOException e) {
-            String error = "There was a problem reading the requested file";
-            logger.debug(e.getMessage());
-            logger.error(error);
-            throw new FileException(error);
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    String errorMessage = "Could not successfully close the file reader";
-                    logger.fatal(errorMessage);
-                    logger.debug(e.getMessage());
-                    throw new FatalException(errorMessage);
-                }
-            }
+        if (filePath.endsWith("txt")) {
+            return parseTxtFile(filePath);
+        } else if (filePath.endsWith("gpx")) {
+            return parseGpxFile(filePath);
+        } else {
+            throw new ParseException("unsupported File extention");
         }
-
-        return waypointList;
     }
 
     private Waypoint parseGarminMapsourceTxtWaypoint(String line) throws ParseException {
@@ -123,9 +102,9 @@ public class FileController {
                 east = position[2].startsWith("E");
 
                 latitude = Double.parseDouble(position[0].substring(1));
-                latitude += Double.parseDouble(position[1])/60;
+                latitude += Double.parseDouble(position[1]) / 60;
                 longitude = Double.parseDouble(position[2].substring(1));
-                longitude += Double.parseDouble(position[3])/60;
+                longitude += Double.parseDouble(position[3]) / 60;
             } else {
                 String errorString = "There was a problem parsing the waypoint: could not parse The coordinate formatting";
                 logger.error(errorString);
@@ -195,5 +174,113 @@ public class FileController {
                 pw.close();
             }
         }
+    }
+
+    private List<Waypoint> parseTxtFile(String filePath) throws ParseException, FileException, FatalException {
+        BufferedReader br = null;
+        List<Waypoint> waypointList = new ArrayList<>();
+
+        try {
+            FileReader fr = new FileReader(filePath);
+            br = new BufferedReader(fr);
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.startsWith("Waypoint")) {
+                    waypointList.add(parseGarminMapsourceTxtWaypoint(line));
+                }
+            }
+        } catch (FileNotFoundException e) {
+            String error = "The requested file was not found";
+            logger.error(error);
+            logger.debug(e.getMessage());
+            throw new FileException(error);
+        } catch (IOException e) {
+            String error = "There was a problem reading the requested file";
+            logger.debug(e.getMessage());
+            logger.error(error);
+            throw new FileException(error);
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    String errorMessage = "Could not successfully close the file reader";
+                    logger.fatal(errorMessage);
+                    logger.debug(e.getMessage());
+                    throw new FatalException(errorMessage);
+                }
+            }
+        }
+
+        return waypointList;
+    }
+
+    private List<Waypoint> parseGpxFile(String filePath) throws FileException, ParseException {
+        List<Waypoint> waypointList = new ArrayList<>();
+        try {
+
+            File file = new File(filePath);
+
+            if (!file.exists()) {
+                String error = "The requested file was not found";
+                logger.error(error);
+                logger.debug(filePath);
+                throw new FileException(error);
+            }
+
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            Document document = documentBuilder.parse(file);
+                       
+            Element rootElement = document.getDocumentElement();
+            rootElement.normalize();
+
+            NodeList waypointNodeLists = rootElement.getElementsByTagName("wpt");
+            logger.debug("found " + waypointNodeLists.getLength() + "waypoints in the file");
+            
+            if (waypointNodeLists.getLength() > 0) {
+                for (int i = 0; i < waypointNodeLists.getLength(); i++) {
+                    Node waypointNode = waypointNodeLists.item(i);
+                    
+                    if (waypointNode.getNodeType() == Node.ELEMENT_NODE) {
+                        Element waypointElement = (Element) waypointNode;
+                        NodeList nameNodeList = waypointElement.getElementsByTagName("name");
+                        String name = nameNodeList.item(0).getChildNodes().item(0).getNodeValue();
+                        double latitude = Double.parseDouble(waypointElement.getAttribute("lat"));
+                        double longitude = Double.parseDouble(waypointElement.getAttribute("lon"));
+                        boolean north, east;
+                        
+                        if (latitude<0){
+                            north = false;
+                            latitude *= -1;
+                        } else {
+                            north = true;
+                        }
+                        
+                        if (longitude<0) {
+                            east = false;
+                            longitude *= -1;
+                        } else {
+                            east = true;
+                        }
+                        
+                        waypointList.add(new Waypoint(name, longitude, east, latitude, north));
+                    }
+                }
+            }
+
+        } catch (ParserConfigurationException | SAXException | InvalidModelStateException ex) {
+            String error = "There was a problem parsing the requested file: " + ex.getMessage();
+            logger.debug(ex.getMessage());
+            logger.error(error);
+            throw new ParseException(error);
+        } catch (IOException e) {
+            String error = "There was a problem reading the requested file";
+            logger.debug(e.getMessage());
+            logger.error(error);
+            throw new FileException(error);
+        }
+
+        return waypointList;
     }
 }
