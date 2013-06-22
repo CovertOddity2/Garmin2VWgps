@@ -24,9 +24,9 @@
 package com.pietervaneeckhout.waypointcoverter.exceptions;
 
 /**
- * FatalException.java (UTF-8)
+ * ProcessingException.java (UTF-8)
  *
- * <p>Custom Exception for notifying the application has encountered a fatal exception.</p>
+ * <p>Custom Exception for passing processing exceptions.</p>
  *
  * 2013/06/22
  *
@@ -34,21 +34,20 @@ package com.pietervaneeckhout.waypointcoverter.exceptions;
  * @since 1.0.2
  * @version 1.0.2
  */
-public class FatalException extends Exception {
+public class ProcessingException extends Exception {
 
-    public FatalException(String string) {
-        super(string);
+    public ProcessingException() {
     }
 
-    public FatalException() {
-        super();
+    public ProcessingException(String message) {
+        super(message);
     }
 
-    public FatalException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public FatalException(Throwable cause) {
+    public ProcessingException(Throwable cause) {
         super(cause);
+    }
+
+    public ProcessingException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

@@ -24,31 +24,31 @@
 package com.pietervaneeckhout.waypointcoverter.exceptions;
 
 /**
- * FatalException.java (UTF-8)
+ * FileAlreadyExistsException.java (UTF-8)
  *
- * <p>Custom Exception for notifying the application has encountered a fatal exception.</p>
+ * <p>Custom Exception for notifying the UI an file exists.</p>
  *
- * 2013/06/22
+ * 2013/06/21
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
  * @since 1.0.2
  * @version 1.0.2
  */
-public class FatalException extends Exception {
+public class FileAlreadyExistsException extends FileException {
 
-    public FatalException(String string) {
+    public FileAlreadyExistsException(String string) {
         super(string);
     }
 
-    public FatalException() {
+    public FileAlreadyExistsException() {
         super();
     }
 
-    public FatalException(String message, Throwable cause) {
+    public FileAlreadyExistsException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public FatalException(Throwable cause) {
+    public FileAlreadyExistsException(Throwable cause) {
         super(cause);
     }
 }

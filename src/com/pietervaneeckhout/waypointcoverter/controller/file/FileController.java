@@ -24,11 +24,15 @@
 package com.pietervaneeckhout.waypointcoverter.controller.file;
 
 import com.pietervaneeckhout.waypointcoverter.exceptions.FatalException;
-import com.pietervaneeckhout.waypointcoverter.exceptions.FileExistsException;
+import com.pietervaneeckhout.waypointcoverter.exceptions.FileAlreadyExistsException;
+import com.pietervaneeckhout.waypointcoverter.exceptions.FileException;
+import com.pietervaneeckhout.waypointcoverter.exceptions.InvalidModelStateException;
+import com.pietervaneeckhout.waypointcoverter.exceptions.ParseException;
 import com.pietervaneeckhout.waypointcoverter.model.Waypoint;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -47,16 +51,16 @@ public class FileController {
     private Logger logger;
 
     public FileController() {
-        logger = Logger.getLogger(FileController.class);
+        logger = Logger.getLogger("FILE");
     }
 
-    public List<Waypoint> readGarminWaypointsFromFile(String filePath) throws FileNotFoundException, IOException, FatalException, IllegalArgumentException {
+    public List<Waypoint> readGarminWaypointsFromFile(String filePath) throws FileException, FatalException, InvalidModelStateException, ParseException {
         BufferedReader br = null;
         List<Waypoint> waypointList = new ArrayList<>();
-        
+
         if (filePath == null || filePath.isEmpty()) {
             logger.error("inputtput file path is empty or null");
-            throw new IllegalArgumentException("intput filePath cannot be null or empty.");
+            throw new InvalidModelStateException("intput filePath cannot be null or empty");
         }
 
         try {
@@ -68,19 +72,24 @@ public class FileController {
                     waypointList.add(parseGarminMapsourceTxtWaypoint(line));
                 }
             }
-        } catch (FileNotFoundException ex) {
-            logger.error("The requested file was not found");
-            throw ex;
-        } catch (IOException ex) {
-            logger.error("IO problem: " + ex.getMessage());
-            throw ex;
+        } catch (FileNotFoundException e) {
+            String error = "The requested file was not found";
+            logger.error(error);
+            logger.debug(e.getMessage());
+            throw new FileException(error);
+        } catch (IOException e) {
+            String error = "There was a problem reading the requested file";
+            logger.debug(e.getMessage());
+            logger.error(error);
+            throw new FileException(error);
         } finally {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException e) {
                     String errorMessage = "Could not successfully close the file reader";
                     logger.fatal(errorMessage);
+                    logger.debug(e.getMessage());
                     throw new FatalException(errorMessage);
                 }
             }
@@ -89,7 +98,7 @@ public class FileController {
         return waypointList;
     }
 
-    private Waypoint parseGarminMapsourceTxtWaypoint(String line) {
+    private Waypoint parseGarminMapsourceTxtWaypoint(String line) throws ParseException {
         boolean north, east;
         double longitude, latitude;
         String name;
@@ -106,29 +115,29 @@ public class FileController {
         longitude = Double.parseDouble(position[1].substring(1));
 
         Waypoint waypoint = null;
+
         try {
-         waypoint = new Waypoint(name, longitude, east, latitude, north);
-        } catch (IllegalArgumentException e) {
-            //TODO
+        waypoint = new Waypoint(name, longitude, east, latitude, north);
+        } catch (InvalidModelStateException ex) {
+            throw new ParseException("There was a problem parsing the waypoint: " + ex.getMessage());
         }
-     
 
         logger.debug(waypoint.toString());
 
         return waypoint;
     }
 
-    public void writeOpelWaypointsToFile(String filePath, List<Waypoint> waypointList) throws FileExistsException, IOException, IllegalArgumentException {
+    public void writeOpelWaypointsToFile(String filePath, List<Waypoint> waypointList) throws InvalidModelStateException, FileException {
         writeOpelWaypointsToFile(filePath, waypointList, false);
     }
 
-    public void writeOpelWaypointsToFile(String filePath, List<Waypoint> waypointList, boolean overwrite) throws FileExistsException, IOException {      
-        
+    public void writeOpelWaypointsToFile(String filePath, List<Waypoint> waypointList, boolean overwrite) throws InvalidModelStateException, FileException {
+
         PrintWriter pw = null;
 
         if (filePath == null || filePath.isEmpty()) {
             logger.error("output file path is empty or null");
-            throw new IllegalArgumentException("output filePath cannot be null or empty.");
+            throw new InvalidModelStateException("output filePath cannot be null or empty.");
         }
 
         //auto add file extention
@@ -142,7 +151,7 @@ public class FileController {
 
             if (file.exists() && !overwrite) {
                 logger.info(filePath + " already exists");
-                throw new FileExistsException(filePath + " already exists");
+                throw new FileAlreadyExistsException(filePath + " already exists");
             } else {
                 logger.info(filePath + " already exists. Cleared for overwrite");
             }
@@ -155,7 +164,7 @@ public class FileController {
             }
         } catch (IOException ex) {
             logger.error("IO problem: " + ex.getMessage());
-            throw ex;
+            throw new FileException("There was an error writing to file");
         } finally {
             if (pw != null) {
                 pw.close();

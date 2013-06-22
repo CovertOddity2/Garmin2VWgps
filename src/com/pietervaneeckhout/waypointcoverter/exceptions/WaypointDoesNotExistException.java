@@ -24,9 +24,9 @@
 package com.pietervaneeckhout.waypointcoverter.exceptions;
 
 /**
- * FatalException.java (UTF-8)
+ * WaypointDoesNotExistException.java (UTF-8)
  *
- * <p>Custom Exception for notifying the application has encountered a fatal exception.</p>
+ * <p>Custom Exception.</p>
  *
  * 2013/06/22
  *
@@ -34,21 +34,20 @@ package com.pietervaneeckhout.waypointcoverter.exceptions;
  * @since 1.0.2
  * @version 1.0.2
  */
-public class FatalException extends Exception {
+public class WaypointDoesNotExistException extends Exception {
 
-    public FatalException(String string) {
-        super(string);
+    public WaypointDoesNotExistException() {
     }
 
-    public FatalException() {
-        super();
+    public WaypointDoesNotExistException(String message) {
+        super(message);
     }
 
-    public FatalException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public FatalException(Throwable cause) {
+    public WaypointDoesNotExistException(Throwable cause) {
         super(cause);
+    }
+
+    public WaypointDoesNotExistException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

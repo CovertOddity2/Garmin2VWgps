@@ -23,6 +23,7 @@
  */
 package com.pietervaneeckhout.waypointcoverter.model;
 
+import com.pietervaneeckhout.waypointcoverter.exceptions.InvalidModelStateException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -39,7 +40,7 @@ import org.apache.log4j.Logger;
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
  * @since 1.0.0
- * @version 1.0.1
+ * @version 1.0.2
  */
 public class Waypoint implements Serializable {
 
@@ -50,14 +51,14 @@ public class Waypoint implements Serializable {
     private transient boolean export;
     private Logger logger;
 
-    public Waypoint(String name, double longitude, boolean east, double latitude, boolean north) throws IllegalArgumentException {
+    public Waypoint(String name, double longitude, boolean east, double latitude, boolean north) throws InvalidModelStateException {
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
         this.east = east;
         this.north = north;
         this.export = true;
-        logger = Logger.getLogger(Waypoint.class);
+        logger = Logger.getLogger("FILE");
         validateState();
     }
 
@@ -68,9 +69,9 @@ public class Waypoint implements Serializable {
     /**
      *
      * @param name the name value
-     * @throws IllegalArgumentException
+     * @throws InvalidModelStateException
      */
-    public void setName(String name) throws IllegalArgumentException {
+    public void setName(String name) throws InvalidModelStateException {
         validateName(name);
         this.name = name;
     }
@@ -82,9 +83,9 @@ public class Waypoint implements Serializable {
     /**
      *
      * @param longitude the longitude value
-     * @throws IllegalArgumentException
+     * @throws InvalidModelStateException
      */
-    public void setLongitude(double longitude) throws IllegalArgumentException {
+    public void setLongitude(double longitude) throws InvalidModelStateException {
         validateLatitude(longitude);
         this.longitude = longitude;
     }
@@ -96,9 +97,9 @@ public class Waypoint implements Serializable {
     /**
      *
      * @param latitude the latitude value
-     * @throws IllegalArgumentException
+     * @throws InvalidModelStateException
      */
-    public void setLatitude(double latitude) throws IllegalArgumentException {
+    public void setLatitude(double latitude) throws InvalidModelStateException {
         validateLatitude(latitude);
         this.latitude = latitude;
     }
@@ -110,9 +111,9 @@ public class Waypoint implements Serializable {
     /**
      *
      * @param east is east
-     * @throws IllegalArgumentException
+     * @throws InvalidModelStateException
      */
-    public void setEast(boolean east) throws IllegalArgumentException {
+    public void setEast(boolean east) throws InvalidModelStateException {
         validateEast(east);
         this.east = east;
     }
@@ -121,12 +122,12 @@ public class Waypoint implements Serializable {
         return north;
     }
 
-    public void setNorth(boolean north) throws IllegalArgumentException {
+    public void setNorth(boolean north) throws InvalidModelStateException {
         validateNorth(north);
         this.north = north;
     }
 
-    private void validateState() throws IllegalArgumentException {
+    private void validateState() throws InvalidModelStateException {
         validateNorth(north);
         validateEast(east);
         validateName(name);
@@ -143,33 +144,33 @@ public class Waypoint implements Serializable {
        logger.debug("exporting waypoint " + name +": " + export);
     }
     
-    private void validateNorth(boolean north) throws IllegalArgumentException {
+    private void validateNorth(boolean north) throws InvalidModelStateException {
     }
 
-    private void validateEast(boolean east) throws IllegalArgumentException {
+    private void validateEast(boolean east) throws InvalidModelStateException {
     }
 
-    private void validateName(String name) throws IllegalArgumentException {
+    private void validateName(String name) throws InvalidModelStateException {
         boolean nameHasContent = (name != null) && (!name.equals(""));
         if (!nameHasContent) {
             logger.error("waypoint name is empty or null");
-            throw new IllegalArgumentException("Names must be non-null and non-empty.");
+            throw new InvalidModelStateException("Names must be non-null and non-empty.");
         }
     }
 
-    private void validateLongitude(double longitude) throws IllegalArgumentException {
+    private void validateLongitude(double longitude) throws InvalidModelStateException {
         if (longitude < 0 || longitude > 180) {
             logger.error("Longitude must be between 0 and 180");
             logger.debug("longitude: " + longitude);
-            throw new IllegalArgumentException("Longitude must be between 0 and 180");
+            throw new InvalidModelStateException("Longitude must be between 0 and 180");
         }
     }
 
-    private void validateLatitude(double latitude) throws IllegalArgumentException {
+    private void validateLatitude(double latitude) throws InvalidModelStateException {
         if (latitude < 0 || latitude > 180) {
             logger.error("Latitude must be between 0 and 180");
             logger.debug("latitude: " + latitude);
-            throw new IllegalArgumentException("Latitude must be between 0 and 180");
+            throw new InvalidModelStateException("Latitude must be between 0 and 180");
         }
     }
 
@@ -192,13 +193,39 @@ public class Waypoint implements Serializable {
         return builder.toString();
     }
     
+    @Override
     public String toString() {
-        return toWaypointUIModel().toString();
+        DecimalFormat decimalFormat = new DecimalFormat("###.000000");
+        StringBuilder builder = new StringBuilder();
+         if (export) {
+            builder.append("export");
+        } else {
+            builder.append("withhold");
+        }
+         builder.append(" ")
+                 .append(name)
+                 .append(" ");
+        if (north) {
+            builder.append("N");
+        } else {
+            builder.append("S");
+        }
+        builder.append(decimalFormat.format(this.latitude))
+                .append(" ");
+        if(east) {
+            builder.append("E");
+        } else {
+            builder.append("W");
+        }
+        builder.append(decimalFormat.format(this.longitude));        
+       
+       return builder.toString();
     }
     
-    public WaypointUI toWaypointUIModel() {
+    public WaypointUI toWaypointUIModel() throws InvalidModelStateException {
         DecimalFormat decimalFormat = new DecimalFormat("###.000000");
         String latitudeString, longitudeString;
+        WaypointUI waypointUI;
         
         if (north) {
             latitudeString = "N";
@@ -214,10 +241,16 @@ public class Waypoint implements Serializable {
         }
         longitudeString += decimalFormat.format(this.longitude);
         
-        return new WaypointUI(export, name, latitudeString, longitudeString);
+        try {
+            waypointUI = new WaypointUI(export, name, latitudeString, longitudeString);
+        } catch (Exception e) {
+            throw new InvalidModelStateException("could not convert to WaypointUI: " + e.getMessage());
+        }
+        
+        return waypointUI;
     }
 
-    private void readObject(ObjectInputStream inputStream) throws ClassNotFoundException, IOException {
+    private void readObject(ObjectInputStream inputStream) throws ClassNotFoundException, IOException, InvalidModelStateException {
         inputStream.defaultReadObject();
         validateState();
         this.export = false;

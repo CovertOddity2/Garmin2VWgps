@@ -23,6 +23,8 @@
  */
 package com.pietervaneeckhout.waypointcoverter.model;
 
+import com.pietervaneeckhout.waypointcoverter.exceptions.InvalidModelStateException;
+
 /**
  * WaypointUIModel.java (UTF-8)
  *
@@ -32,16 +34,25 @@ package com.pietervaneeckhout.waypointcoverter.model;
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
  * @since 1.0.1
- * @version 1.0.1
+ * @version 1.0.2
  */
 public class WaypointUI {
-    
+
     private final Boolean export;
     private final String name;
     private final String latitude;
     private final String longitude;
 
-    public WaypointUI(boolean export, String name, String latitude, String longitude) {
+    public WaypointUI(boolean export, String name, String latitude, String longitude) throws InvalidModelStateException {
+        if (name == null || name.isEmpty()) {
+            throw new InvalidModelStateException("name is null or empty");
+        }
+        if (latitude == null || latitude.isEmpty()) {
+            throw new InvalidModelStateException("latitude is null or empty");
+        }
+        if (longitude == null || longitude.isEmpty()) {
+            throw new InvalidModelStateException("longitude is null or empty");
+        }
         this.export = export;
         this.name = name;
         this.latitude = latitude;
@@ -63,7 +74,7 @@ public class WaypointUI {
     public String getLongitude() {
         return longitude;
     }
-    
+
     @Override
     public String toString() {
         String output;

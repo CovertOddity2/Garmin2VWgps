@@ -23,32 +23,34 @@
  */
 package com.pietervaneeckhout.waypointcoverter.exceptions;
 
+import java.io.IOException;
+
 /**
- * FatalException.java (UTF-8)
+ * FileException.java (UTF-8)
  *
- * <p>Custom Exception for notifying the application has encountered a fatal exception.</p>
+ * <p>Custom Exception for Passing IO exceptions.</p>
  *
- * 2013/06/22
+ * 2013/06/21
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
  * @since 1.0.2
  * @version 1.0.2
  */
-public class FatalException extends Exception {
+public class FileException extends IOException {
 
-    public FatalException(String string) {
+    public FileException(String string) {
         super(string);
     }
 
-    public FatalException() {
+    public FileException() {
         super();
     }
 
-    public FatalException(String message, Throwable cause) {
+    public FileException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public FatalException(Throwable cause) {
+    public FileException(Throwable cause) {
         super(cause);
     }
 }

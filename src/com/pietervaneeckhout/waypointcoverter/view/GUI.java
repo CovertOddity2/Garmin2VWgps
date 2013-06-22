@@ -25,7 +25,10 @@ package com.pietervaneeckhout.waypointcoverter.view;
 
 import com.pietervaneeckhout.waypointcoverter.controller.DomainFacade;
 import com.pietervaneeckhout.waypointcoverter.exceptions.FatalException;
-import com.pietervaneeckhout.waypointcoverter.exceptions.FileExistsException;
+import com.pietervaneeckhout.waypointcoverter.exceptions.FileAlreadyExistsException;
+import com.pietervaneeckhout.waypointcoverter.exceptions.FileException;
+import com.pietervaneeckhout.waypointcoverter.exceptions.ProcessingException;
+import com.pietervaneeckhout.waypointcoverter.exceptions.WaypointDoesNotExistException;
 import com.pietervaneeckhout.waypointcoverter.model.WaypointUI;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
@@ -35,8 +38,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -408,7 +409,11 @@ public class GUI extends BaseUI {
         public void setValueAt(Object value, int rowIndex, int columnIndex) {
             if (columnIndex == 0) {
                 if (value instanceof Boolean) {
-                    domainFacade.toggleWaypointExport(data.get(rowIndex).getName());
+                    try {
+                        domainFacade.toggleWaypointExport(data.get(rowIndex).getName());
+                    } catch (WaypointDoesNotExistException ex) {
+                        JOptionPane.showMessageDialog(mainFrame, value);
+                    }
                 }
             }
         }
@@ -450,10 +455,8 @@ public class GUI extends BaseUI {
                 txtInput.setText(filePath);
                 try {
                     domainFacade.loadFile(filePath);
-                } catch (FileNotFoundException ex) {
-                    JOptionPane.showMessageDialog(mainFrame, "Specified input file fdoes not exist", "Error", JOptionPane.ERROR_MESSAGE);
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(mainFrame, "Error reading file", "Error", JOptionPane.ERROR_MESSAGE);
+                } catch (FileException | ProcessingException ex) {
+                    JOptionPane.showMessageDialog(mainFrame, "import failed: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 } catch (FatalException ex) {
                     JOptionPane.showMessageDialog(mainFrame, "A fatal error occured, closing application", "Error", JOptionPane.ERROR_MESSAGE);
                     System.exit(1);
@@ -468,10 +471,8 @@ public class GUI extends BaseUI {
         public void actionPerformed(ActionEvent e) {
             try {
                 domainFacade.loadFile(txtInput.getText());
-            } catch (FileNotFoundException ex) {
-                JOptionPane.showMessageDialog(mainFrame, "Specified input file fdoes not exist", "Error", JOptionPane.ERROR_MESSAGE);
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(mainFrame, "Error reading file", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (FileException | ProcessingException ex) {
+                JOptionPane.showMessageDialog(mainFrame, "import failed: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             } catch (FatalException ex) {
                 JOptionPane.showMessageDialog(mainFrame, "A fatal error occured, closing application", "Error", JOptionPane.ERROR_MESSAGE);
                 System.exit(1);
@@ -500,19 +501,19 @@ public class GUI extends BaseUI {
             try {
                 domainFacade.exportWaypoints(txtOutput.getText(), false);
                 JOptionPane.showMessageDialog(mainFrame, "Export completed", "Export", JOptionPane.INFORMATION_MESSAGE);
-            } catch (FileExistsException ex) {
+            } catch (FileAlreadyExistsException ex) {
                 int overwriteResponse = JOptionPane.showConfirmDialog(mainFrame, ex.getMessage() + "\\Do you want to overwrite this file?", "File Exists", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (overwriteResponse == JOptionPane.OK_OPTION) {
                     try {
                         domainFacade.exportWaypoints(txtOutput.getText(), true);
                         JOptionPane.showMessageDialog(mainFrame, "Export completed", "Export", JOptionPane.INFORMATION_MESSAGE);
-                    } catch (IOException ex1) {
+                    } catch (FileException | ProcessingException ex1) {
                         JOptionPane.showMessageDialog(mainFrame, "Export Failed: " + ex1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
                     JOptionPane.showMessageDialog(mainFrame, "Export cancelled", "Export", JOptionPane.INFORMATION_MESSAGE);
                 }
-            } catch (IOException ex) {
+            } catch (FileException | ProcessingException ex) {
                 JOptionPane.showMessageDialog(mainFrame, "Export Failed: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }

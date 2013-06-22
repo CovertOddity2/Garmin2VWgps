@@ -23,14 +23,16 @@
  */
 package com.pietervaneeckhout.waypointcoverter.controller;
 
+import com.pietervaneeckhout.waypointcoverter.exceptions.ProcessingException;
 import com.pietervaneeckhout.waypointcoverter.controller.file.FileController;
 import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointController;
 import com.pietervaneeckhout.waypointcoverter.exceptions.FatalException;
-import com.pietervaneeckhout.waypointcoverter.exceptions.FileExistsException;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.pietervaneeckhout.waypointcoverter.exceptions.FileException;
+import com.pietervaneeckhout.waypointcoverter.exceptions.InvalidModelStateException;
+import com.pietervaneeckhout.waypointcoverter.exceptions.ParseException;
+import com.pietervaneeckhout.waypointcoverter.exceptions.WaypointAlreadyExistsException;
+import com.pietervaneeckhout.waypointcoverter.exceptions.WaypointDoesNotExistException;
+import org.apache.log4j.Logger;
 
 /**
  * DomainFacade.java (UTF-8)
@@ -48,8 +50,10 @@ public class DomainFacade {
 
     private WaypointController waypointController;
     private FileController fileController;
+    private Logger logger;
 
     public DomainFacade(WaypointController waypointController, FileController fileController) {
+        logger = Logger.getLogger("FILE");
         this.waypointController = waypointController;
         this.fileController = fileController;
     }
@@ -70,15 +74,25 @@ public class DomainFacade {
         this.fileController = fileController;
     }
 
-    public void loadFile(String filePath) throws FileNotFoundException, IOException, FatalException {
-        waypointController.addWaypoints(fileController.readGarminWaypointsFromFile(filePath));
+    public void loadFile(String filePath) throws FileException, FatalException, ProcessingException {
+        try {
+            waypointController.addWaypoints(fileController.readGarminWaypointsFromFile(filePath));
+
+        } catch (WaypointAlreadyExistsException | InvalidModelStateException | ParseException ex) {
+            throw new ProcessingException(ex.getMessage());
+        }
     }
 
-    public void toggleWaypointExport(String waypointName) throws IllegalArgumentException {
+    public void toggleWaypointExport(String waypointName) throws WaypointDoesNotExistException {
         waypointController.toggleWaypointExport(waypointName);
     }
 
-    public void exportWaypoints(String filePath, boolean overwrite) throws FileExistsException, IOException {
-        fileController.writeOpelWaypointsToFile(filePath, waypointController.getWaypointRepository().getWaypoitsToExport(), overwrite);
+    public void exportWaypoints(String filePath, boolean overwrite) throws FileException, ProcessingException {
+        try {
+            fileController.writeOpelWaypointsToFile(filePath, waypointController.getWaypointRepository().getWaypointsToExport(), overwrite);
+        } catch (InvalidModelStateException e) {
+            throw new ProcessingException(e.getMessage());
+        }
+        
     }
 }

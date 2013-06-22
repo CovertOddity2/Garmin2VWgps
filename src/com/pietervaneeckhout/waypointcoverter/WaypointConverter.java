@@ -65,7 +65,7 @@ public class WaypointConverter {
         PropertyConfigurator.configure("settings/log4j.properties");
         
         //make logger
-        logger = Logger.getLogger(WaypointConverter.class);
+        logger = Logger.getLogger("FILE");
         
         logger.trace("creating waypoint repository");
         WaypointRepository waypointRepository = new WaypointRepository();

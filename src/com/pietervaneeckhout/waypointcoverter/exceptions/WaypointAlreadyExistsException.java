@@ -23,34 +23,31 @@
  */
 package com.pietervaneeckhout.waypointcoverter.exceptions;
 
-import java.io.IOException;
-
 /**
- * FileExistsException.java (UTF-8)
+ * WaypointAlreadyExistsException.java (UTF-8)
  *
- * <p>Custom Exception for notifying the UI an file exists.</p>
+ * <p>Custom Exception for notifying the UI an waypoint already exists.</p>
  *
- * 2013/06/21
+ * 2013/06/22
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
  * @since 1.0.2
  * @version 1.0.2
  */
-public class FileExistsException extends IOException {
+public class WaypointAlreadyExistsException extends Exception {
 
-    public FileExistsException(String string) {
-        super(string);
+    public WaypointAlreadyExistsException() {
     }
 
-    public FileExistsException() {
-        super();
+    public WaypointAlreadyExistsException(Throwable cause) {
+        super(cause);
     }
 
-    public FileExistsException(String message, Throwable cause) {
+    public WaypointAlreadyExistsException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public FileExistsException(Throwable cause) {
-        super(cause);
-    }
+    public WaypointAlreadyExistsException(String message) {
+        super(message);
+    }    
 }

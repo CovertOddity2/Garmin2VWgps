@@ -24,7 +24,6 @@
 package com.pietervaneeckhout.waypointcoverter.view;
 
 import com.pietervaneeckhout.waypointcoverter.controller.DomainFacade;
-import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointController;
 import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointRepository;
 import com.pietervaneeckhout.waypointcoverter.model.WaypointUI;
 import com.pietervaneeckhout.waypointcoverter.util.BaseObserver;

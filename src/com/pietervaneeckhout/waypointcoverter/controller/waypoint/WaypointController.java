@@ -23,6 +23,8 @@
  */
 package com.pietervaneeckhout.waypointcoverter.controller.waypoint;
 
+import com.pietervaneeckhout.waypointcoverter.exceptions.WaypointAlreadyExistsException;
+import com.pietervaneeckhout.waypointcoverter.exceptions.WaypointDoesNotExistException;
 import com.pietervaneeckhout.waypointcoverter.model.Waypoint;
 import java.util.Collection;
 import org.apache.log4j.Logger;
@@ -48,7 +50,7 @@ public class WaypointController {
     }
     
     public WaypointController(WaypointRepository waypointRepository) {
-        logger = Logger.getLogger(WaypointController.class);
+        logger = Logger.getLogger("FILE");
         this.waypointRepository = waypointRepository;
     }
 
@@ -60,15 +62,15 @@ public class WaypointController {
         this.waypointRepository = waypointRepository;
     }
         
-    public void toggleWaypointExport(String waypointName){
+    public void toggleWaypointExport(String waypointName) throws WaypointDoesNotExistException {
        waypointRepository.toggleWaypointExport(waypointName);
     }
     
-    public void addWayPoint(Waypoint waypoint) {
+    public void addWayPoint(Waypoint waypoint) throws WaypointAlreadyExistsException {
         waypointRepository.addWaypoint(waypoint);
     }
     
-    public void addWaypoints(Collection<Waypoint> waypoints) {
+    public void addWaypoints(Collection<Waypoint> waypoints) throws WaypointAlreadyExistsException {
         for (Waypoint waypoint : waypoints) {
             this.addWayPoint(waypoint);
         }

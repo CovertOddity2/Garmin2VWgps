@@ -24,9 +24,9 @@
 package com.pietervaneeckhout.waypointcoverter.exceptions;
 
 /**
- * FatalException.java (UTF-8)
+ * ParseException.java (UTF-8)
  *
- * <p>Custom Exception for notifying the application has encountered a fatal exception.</p>
+ * <p>Custom Exception for passing parser exceptions.</p>
  *
  * 2013/06/22
  *
@@ -34,21 +34,20 @@ package com.pietervaneeckhout.waypointcoverter.exceptions;
  * @since 1.0.2
  * @version 1.0.2
  */
-public class FatalException extends Exception {
+public class ParseException extends Exception{
 
-    public FatalException(String string) {
-        super(string);
+    public ParseException() {
     }
 
-    public FatalException() {
-        super();
+    public ParseException(String message) {
+        super(message);
     }
 
-    public FatalException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public FatalException(Throwable cause) {
+    public ParseException(Throwable cause) {
         super(cause);
+    }
+
+    public ParseException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
