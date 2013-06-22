@@ -39,8 +39,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
@@ -335,8 +333,6 @@ public class GUI extends BaseUI {
     }
 
     private void addActionListeners() {
-        //waypointTable
-        //TODO
 
         //browseInput
         btnBrowseInput.addActionListener(new BrowseInputListener());
@@ -410,9 +406,9 @@ public class GUI extends BaseUI {
 
         @Override
         public void setValueAt(Object value, int rowIndex, int columnIndex) {
-            if (columnIndex ==0) {
+            if (columnIndex == 0) {
                 if (value instanceof Boolean) {
-                   domainFacade.toggleWaypointExport(data.get(rowIndex).getName());
+                    domainFacade.toggleWaypointExport(data.get(rowIndex).getName());
                 }
             }
         }
@@ -454,10 +450,13 @@ public class GUI extends BaseUI {
                 txtInput.setText(filePath);
                 try {
                     domainFacade.loadFile(filePath);
+                } catch (FileNotFoundException ex) {
+                    JOptionPane.showMessageDialog(mainFrame, "Specified input file fdoes not exist", "Error", JOptionPane.ERROR_MESSAGE);
                 } catch (IOException ex) {
-                    //TODO
+                    JOptionPane.showMessageDialog(mainFrame, "Error reading file", "Error", JOptionPane.ERROR_MESSAGE);
                 } catch (FatalException ex) {
-                    JOptionPane.showMessageDialog(mainFrame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(mainFrame, "A fatal error occured, closing application", "Error", JOptionPane.ERROR_MESSAGE);
+                    System.exit(1);
                 }
             }
         }
@@ -469,11 +468,14 @@ public class GUI extends BaseUI {
         public void actionPerformed(ActionEvent e) {
             try {
                 domainFacade.loadFile(txtInput.getText());
+            } catch (FileNotFoundException ex) {
+                JOptionPane.showMessageDialog(mainFrame, "Specified input file fdoes not exist", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (IOException ex) {
-                    //TODO
-                } catch (FatalException ex) {
-                    JOptionPane.showMessageDialog(mainFrame, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                JOptionPane.showMessageDialog(mainFrame, "Error reading file", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (FatalException ex) {
+                JOptionPane.showMessageDialog(mainFrame, "A fatal error occured, closing application", "Error", JOptionPane.ERROR_MESSAGE);
+                System.exit(1);
+            }
         }
     }
 
@@ -499,7 +501,7 @@ public class GUI extends BaseUI {
                 domainFacade.exportWaypoints(txtOutput.getText(), false);
                 JOptionPane.showMessageDialog(mainFrame, "Export completed", "Export", JOptionPane.INFORMATION_MESSAGE);
             } catch (FileExistsException ex) {
-                int overwriteResponse = JOptionPane.showConfirmDialog(mainFrame, ex.getMessage()+"\\Do you want to overwrite this file?", "File Exists", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                int overwriteResponse = JOptionPane.showConfirmDialog(mainFrame, ex.getMessage() + "\\Do you want to overwrite this file?", "File Exists", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (overwriteResponse == JOptionPane.OK_OPTION) {
                     try {
                         domainFacade.exportWaypoints(txtOutput.getText(), true);
@@ -508,7 +510,7 @@ public class GUI extends BaseUI {
                         JOptionPane.showMessageDialog(mainFrame, "Export Failed: " + ex1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
-                     JOptionPane.showMessageDialog(mainFrame, "Export cancelled", "Export", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(mainFrame, "Export cancelled", "Export", JOptionPane.INFORMATION_MESSAGE);
                 }
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(mainFrame, "Export Failed: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

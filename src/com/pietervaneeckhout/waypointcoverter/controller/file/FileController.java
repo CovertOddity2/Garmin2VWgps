@@ -50,9 +50,14 @@ public class FileController {
         logger = Logger.getLogger(FileController.class);
     }
 
-    public List<Waypoint> readGarminWaypointsFromFile(String filePath) throws FileNotFoundException, IOException, FatalException {
+    public List<Waypoint> readGarminWaypointsFromFile(String filePath) throws FileNotFoundException, IOException, FatalException, IllegalArgumentException {
         BufferedReader br = null;
         List<Waypoint> waypointList = new ArrayList<>();
+        
+        if (filePath == null || filePath.isEmpty()) {
+            logger.error("inputtput file path is empty or null");
+            throw new IllegalArgumentException("intput filePath cannot be null or empty.");
+        }
 
         try {
             FileReader fr = new FileReader(filePath);
@@ -100,7 +105,12 @@ public class FileController {
         latitude = Double.parseDouble(position[0].substring(1));
         longitude = Double.parseDouble(position[1].substring(1));
 
-        Waypoint waypoint = new Waypoint(name, longitude, east, latitude, north);
+        Waypoint waypoint = null;
+        try {
+         waypoint = new Waypoint(name, longitude, east, latitude, north);
+        } catch (IllegalArgumentException e) {
+            //TODO
+        }
      
 
         logger.debug(waypoint.toString());
@@ -108,7 +118,7 @@ public class FileController {
         return waypoint;
     }
 
-    public void writeOpelWaypointsToFile(String filePath, List<Waypoint> waypointList) throws FileExistsException, IOException {
+    public void writeOpelWaypointsToFile(String filePath, List<Waypoint> waypointList) throws FileExistsException, IOException, IllegalArgumentException {
         writeOpelWaypointsToFile(filePath, waypointList, false);
     }
 
@@ -117,8 +127,8 @@ public class FileController {
         PrintWriter pw = null;
 
         if (filePath == null || filePath.isEmpty()) {
-            logger.error("file path is empty or null");
-            throw new IllegalArgumentException("filePath cannot be null or empty.");
+            logger.error("output file path is empty or null");
+            throw new IllegalArgumentException("output filePath cannot be null or empty.");
         }
 
         //auto add file extention
