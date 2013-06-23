@@ -23,6 +23,7 @@
  */
 package com.pietervaneeckhout.waypointcoverter.controller.file;
 
+import com.pietervaneeckhout.waypointcoverter.controller.file.parser.CsvFileParser;
 import com.pietervaneeckhout.waypointcoverter.controller.file.parser.FileParser;
 import com.pietervaneeckhout.waypointcoverter.controller.file.parser.GpxFileParser;
 import com.pietervaneeckhout.waypointcoverter.controller.file.parser.TxtFileParser;
@@ -68,7 +69,7 @@ public class FileController {
         } else if (filePath.endsWith("gpx")) {
             fileParser = new GpxFileParser();
         } else if (filePath.endsWith("csv")) {
-            throw new UnsupportedOperationException("not implemented yet");
+            fileParser = new CsvFileParser();
         } else {
             throw new ParseException("unsupported File extention");
         }

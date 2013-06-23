@@ -26,7 +26,6 @@ package com.pietervaneeckhout.waypointcoverter.controller.file.parser;
 
 import com.pietervaneeckhout.waypointcoverter.exceptions.FatalException;
 import com.pietervaneeckhout.waypointcoverter.exceptions.FileException;
-import com.pietervaneeckhout.waypointcoverter.exceptions.InvalidModelStateException;
 import com.pietervaneeckhout.waypointcoverter.exceptions.ParseException;
 import com.pietervaneeckhout.waypointcoverter.model.Waypoint;
 import java.io.BufferedReader;
@@ -36,15 +35,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  * TxtFileParser.java (UTF-8)
@@ -101,6 +92,8 @@ public class TxtFileParser implements FileParser {
                             waypointList.add(lineParser.parseLine(line, "\\t"));
                         }
                     }
+                } else {
+                    throw new ParseException("The received file format was not recognised");
                 }
             }
         } catch (FileNotFoundException e) {
