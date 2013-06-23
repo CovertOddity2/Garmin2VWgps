@@ -33,6 +33,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -183,10 +184,31 @@ public class FileController {
         try {
             FileReader fr = new FileReader(filePath);
             br = new BufferedReader(fr);
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.startsWith("Waypoint")) {
-                    waypointList.add(parseGarminMapsourceTxtWaypoint(line));
+            String line = br.readLine();
+            if (line == null) {
+                logger.error("The file is empty");
+                throw new ParseException("The file is empty");
+            } else {
+                if (line.equals("\uFEFF")) {
+                    while ((line = br.readLine()) != null) {
+                        if (line.startsWith("wpt")) {
+                            logger.info("recognized basecamp txt file");
+                            br.readLine();
+                            line = br.readLine();
+                            while (!line.isEmpty() && !line.equals("\uFEFF")) {
+                                waypointList.add(parseBasecampWaypoint(line, "\\t"));
+                                line = br.readLine();
+                            }
+                            break;
+                        }
+                    }
+                } else if (line.startsWith("Grid")) {
+                    while ((line = br.readLine()) != null) {
+                        if (line.startsWith("Waypoint")) {
+                            logger.info("recognized Mapsource txt file");
+                            waypointList.add(parseGarminMapsourceTxtWaypoint(line));
+                        }
+                    }
                 }
             }
         } catch (FileNotFoundException e) {
@@ -231,17 +253,17 @@ public class FileController {
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             Document document = documentBuilder.parse(file);
-                       
+
             Element rootElement = document.getDocumentElement();
             rootElement.normalize();
 
             NodeList waypointNodeLists = rootElement.getElementsByTagName("wpt");
             logger.debug("found " + waypointNodeLists.getLength() + "waypoints in the file");
-            
+
             if (waypointNodeLists.getLength() > 0) {
                 for (int i = 0; i < waypointNodeLists.getLength(); i++) {
                     Node waypointNode = waypointNodeLists.item(i);
-                    
+
                     if (waypointNode.getNodeType() == Node.ELEMENT_NODE) {
                         Element waypointElement = (Element) waypointNode;
                         NodeList nameNodeList = waypointElement.getElementsByTagName("name");
@@ -249,21 +271,21 @@ public class FileController {
                         double latitude = Double.parseDouble(waypointElement.getAttribute("lat"));
                         double longitude = Double.parseDouble(waypointElement.getAttribute("lon"));
                         boolean north, east;
-                        
-                        if (latitude<0){
+
+                        if (latitude < 0) {
                             north = false;
                             latitude *= -1;
                         } else {
                             north = true;
                         }
-                        
-                        if (longitude<0) {
+
+                        if (longitude < 0) {
                             east = false;
                             longitude *= -1;
                         } else {
                             east = true;
                         }
-                        
+
                         waypointList.add(new Waypoint(name, longitude, east, latitude, north));
                     }
                 }
@@ -279,8 +301,48 @@ public class FileController {
             logger.debug(e.getMessage());
             logger.error(error);
             throw new FileException(error);
+        } catch (NumberFormatException e) {
+            String errorString = "There was a problem parsing the waypoint: could not parse The coordinate formatting";
+            logger.error(errorString);
+            logger.debug(e.getMessage());
+            throw new ParseException(errorString);
         }
 
         return waypointList;
+    }
+
+    private Waypoint parseBasecampWaypoint(String line, String seperator) throws ParseException {
+        try {
+            String[] parts = line.split(seperator);
+
+            String name = parts[7].replaceAll("^\"|\"$", "");;
+            double latitude = Double.parseDouble(parts[1]);
+            double longitude = Double.parseDouble(parts[2]);
+            boolean north, east;
+
+            if (latitude < 0) {
+                north = false;
+                latitude *= -1;
+            } else {
+                north = true;
+            }
+
+            if (longitude < 0) {
+                east = false;
+                longitude *= -1;
+            } else {
+                east = true;
+            }
+
+
+            return new Waypoint(name, longitude, east, latitude, north);
+        } catch (InvalidModelStateException ex) {
+            throw new ParseException("There was a problem parsing the waypoint: " + ex.getMessage());
+        } catch (NumberFormatException e) {
+            String errorString = "There was a problem parsing the waypoint: could not parse The coordinate formatting";
+            logger.error(errorString);
+            logger.debug(e.getMessage());
+            throw new ParseException(errorString);
+        }
     }
 }
