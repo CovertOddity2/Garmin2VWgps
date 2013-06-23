@@ -12,3 +12,5 @@ output file path is empty or null
 inputtput file path is empty or null
 output file path is empty or null
 inputtput file path is empty or null
+The requested file was not found
+There was a problem parsing the waypoint: could not parse The coordinate formatting
