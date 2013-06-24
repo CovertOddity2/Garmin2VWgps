@@ -100,8 +100,4 @@ public class DomainFacade {
             throw new ProcessingException(e.getMessage());
         }
     }
-
-    public void saveProperties(Map<String, String> propertiesValues) {
-        propertiesController.setProperties(propertiesValues);
-    }
 }

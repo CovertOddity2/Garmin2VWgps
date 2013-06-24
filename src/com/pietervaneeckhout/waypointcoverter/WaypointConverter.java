@@ -82,8 +82,8 @@ public class WaypointConverter {
             
             GUI ui = new GUI(domainFacade);
             
-            waypointRepository.addObsever(ui.getMainGUIDesktopPane());
-            propertiesController.addObsever(ui.getSettingsGUIInternalFrame());
+            waypointRepository.addObserver(ui.getMainGUIDesktopPane());
+            propertiesController.addObserver(ui.getSettingsGUIInternalFrame());
             
         } catch (FileException ex) {
             logger.error("Something went wrong during startup: " + ex.getMessage());

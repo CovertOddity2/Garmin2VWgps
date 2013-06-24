@@ -25,11 +25,11 @@ package com.pietervaneeckhout.waypointcoverter.view;
 
 import com.pietervaneeckhout.waypointcoverter.controller.DomainFacade;
 import com.pietervaneeckhout.waypointcoverter.controller.property.PropertiesController;
-import com.pietervaneeckhout.waypointcoverter.util.BaseObserver;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -46,19 +46,19 @@ import javax.swing.JScrollPane;
  * @since 1.2.1
  * @version 1.2.1
  */
-public class SettingsGUIInternalFrame extends BaseObserver<PropertiesController, Map<String, String>> {
+public class SettingsGUIInternalFrame extends JInternalFrame implements Observer {
 
     private DomainFacade domainFacade;
-    private JInternalFrame settingsFrame;
     private JPanel contentPanel;
     private JScrollPane contentScrollPane;
     private JCheckBox appendBox, overwriteBox;
-    private JComboBox languageComboBox;
+    private JComboBox<String> languageComboBox;
     private JLabel appendLabel, overwriteLabal, languageLabel;
 
     public SettingsGUIInternalFrame(DomainFacade domainFacade) {
+        super("Settings", false, true);
         this.domainFacade = domainFacade;
-        
+
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's settingsGUIWindow.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -70,11 +70,11 @@ public class SettingsGUIInternalFrame extends BaseObserver<PropertiesController,
     }
 
     private void initGUI() {
-        settingsFrame = new JInternalFrame("Settings", false, true);
     }
-    
+
     @Override
-    public void update(Map<String, String> data) {
-        
+    public void update(Observable observerable, Object dataObject) {
+        if (observerable instanceof PropertiesController && dataObject instanceof Map) {
+        }
     }
 }

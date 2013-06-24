@@ -31,7 +31,6 @@ import com.pietervaneeckhout.waypointcoverter.exceptions.FileException;
 import com.pietervaneeckhout.waypointcoverter.exceptions.ProcessingException;
 import com.pietervaneeckhout.waypointcoverter.exceptions.WaypointDoesNotExistException;
 import com.pietervaneeckhout.waypointcoverter.model.WaypointUI;
-import com.pietervaneeckhout.waypointcoverter.util.BaseObserver;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -41,9 +40,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
+import org.apache.log4j.Logger;
 
 /**
  * MainGUIDesktopPane.java (UTF-8)
@@ -56,23 +58,24 @@ import javax.swing.table.AbstractTableModel;
  * @since 1.0.1
  * @version 1.2.1
  */
-public class MainGUIDesktopPane extends BaseObserver<WaypointRepository, List<WaypointUI>> {
+public class MainGUIDesktopPane extends JDesktopPane implements Observer {
 
     private final static boolean shouldFill = true;
     private final static boolean shouldWeightX = true;
     private final static boolean shouldWeightY = true;
     private final static boolean RIGHT_TO_LEFT = false;
+    private Logger logger;
     private JFrame parentFrame;
-    private JDesktopPane desktopPane;
     private JScrollPane tableScrollPane;
     private WaypointTable waypointTable;
     private JLabel lblInput, lblOutput;
     private JButton btnBrowseInput, btnBrowseOutput, btnLoad, btnExport;
     private JTextField txtInput, txtOutput;
-    
     private DomainFacade domainFacade;
 
-    public MainGUIDesktopPane(DomainFacade domainFacade) { 
+    public MainGUIDesktopPane(JFrame parentFrame, DomainFacade domainFacade) {
+        logger = Logger.getLogger(MainGUIDesktopPane.class);
+        this.parentFrame = parentFrame;
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's MainGUIDesktopPane.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -85,7 +88,6 @@ public class MainGUIDesktopPane extends BaseObserver<WaypointRepository, List<Wa
 
     private void initGUI() {
         //intialise elements
-        desktopPane = new JDesktopPane();
         waypointTable = new WaypointTable();
         tableScrollPane = new JScrollPane(waypointTable);
         btnBrowseInput = new JButton("Browse");
@@ -102,7 +104,7 @@ public class MainGUIDesktopPane extends BaseObserver<WaypointRepository, List<Wa
         waypointTable.setFillsViewportHeight(true);
 
         //add items to panel
-        addComponentsToPanel();
+        addComponentsToPane();
 
         //addActionListeners
         addActionListeners();
@@ -110,23 +112,23 @@ public class MainGUIDesktopPane extends BaseObserver<WaypointRepository, List<Wa
         //set sizes
         Dimension minDimension = new Dimension(350, 250);
         Dimension prefDimension = new Dimension(700, 500);
-        desktopPane.setMinimumSize(minDimension);
-        desktopPane.setPreferredSize(prefDimension);
-        desktopPane.setSize(prefDimension);
-        
+        this.setMinimumSize(minDimension);
+        this.setPreferredSize(prefDimension);
+        this.setSize(prefDimension);
+
         //set drag mode
-        desktopPane.setDragMode(JDesktopPane.LIVE_DRAG_MODE);
+        this.setDragMode(JDesktopPane.LIVE_DRAG_MODE);
     }
 
-    private void addComponentsToPanel() {
+    private void addComponentsToPane() {
         //set a margin around components
-        desktopPane.setBorder(new EmptyBorder(15, 15, 15, 15));
+        this.setBorder(new EmptyBorder(15, 15, 15, 15));
 
         if (RIGHT_TO_LEFT) {
-            desktopPane.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+            this.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         }
 
-        desktopPane.setLayout(new GridBagLayout());
+        this.setLayout(new GridBagLayout());
         GridBagConstraints tableConstraints = new GridBagConstraints();
         GridBagConstraints lblInputConstraints = new GridBagConstraints();
         GridBagConstraints txtInputConstraints = new GridBagConstraints();
@@ -152,7 +154,7 @@ public class MainGUIDesktopPane extends BaseObserver<WaypointRepository, List<Wa
         tableConstraints.gridy = 0;
         tableConstraints.gridwidth = 4;
         tableConstraints.insets = new Insets(0, 0, 0, 0);
-        desktopPane.add(tableScrollPane, tableConstraints);
+        this.add(tableScrollPane, tableConstraints);
 
         //file chooser portion
         if (shouldFill) {
@@ -167,7 +169,7 @@ public class MainGUIDesktopPane extends BaseObserver<WaypointRepository, List<Wa
         lblInputConstraints.gridx = 0;
         lblInputConstraints.gridy = 1;
         lblInputConstraints.insets = new Insets(10, 0, 0, 10);
-        desktopPane.add(lblInput, lblInputConstraints);
+        this.add(lblInput, lblInputConstraints);
 
         if (shouldFill) {
             txtInputConstraints.fill = GridBagConstraints.HORIZONTAL;
@@ -181,7 +183,7 @@ public class MainGUIDesktopPane extends BaseObserver<WaypointRepository, List<Wa
         txtInputConstraints.gridx = 1;
         txtInputConstraints.gridy = 1;
         txtInputConstraints.insets = new Insets(10, 0, 0, 0);
-        desktopPane.add(txtInput, txtInputConstraints);
+        this.add(txtInput, txtInputConstraints);
 
         if (shouldFill) {
             btnBrowseInputConstraints.fill = GridBagConstraints.NONE;
@@ -195,7 +197,7 @@ public class MainGUIDesktopPane extends BaseObserver<WaypointRepository, List<Wa
         btnBrowseInputConstraints.gridx = 2;
         btnBrowseInputConstraints.gridy = 1;
         btnBrowseInputConstraints.insets = new Insets(10, 0, 0, 0);
-        desktopPane.add(btnBrowseInput, btnBrowseInputConstraints);
+        this.add(btnBrowseInput, btnBrowseInputConstraints);
 
         if (shouldFill) {
             btnLoadConstraints.fill = GridBagConstraints.NONE;
@@ -209,7 +211,7 @@ public class MainGUIDesktopPane extends BaseObserver<WaypointRepository, List<Wa
         btnLoadConstraints.gridx = 3;
         btnLoadConstraints.gridy = 1;
         btnLoadConstraints.insets = new Insets(10, 10, 0, 0);
-        desktopPane.add(btnLoad, btnLoadConstraints);
+        this.add(btnLoad, btnLoadConstraints);
 
         if (shouldFill) {
             lblOutputConstraints.fill = GridBagConstraints.NONE;
@@ -223,7 +225,7 @@ public class MainGUIDesktopPane extends BaseObserver<WaypointRepository, List<Wa
         lblOutputConstraints.gridx = 0;
         lblOutputConstraints.gridy = 2;
         lblOutputConstraints.insets = new Insets(10, 0, 0, 10);
-        desktopPane.add(lblOutput, lblOutputConstraints);
+        this.add(lblOutput, lblOutputConstraints);
 
         if (shouldFill) {
             txtOutputConstraints.fill = GridBagConstraints.HORIZONTAL;
@@ -237,7 +239,7 @@ public class MainGUIDesktopPane extends BaseObserver<WaypointRepository, List<Wa
         txtOutputConstraints.gridx = 1;
         txtOutputConstraints.gridy = 2;
         txtOutputConstraints.insets = new Insets(10, 0, 0, 0);
-        desktopPane.add(txtOutput, txtOutputConstraints);
+        this.add(txtOutput, txtOutputConstraints);
 
         if (shouldFill) {
             btnBrowseOutputConstraints.fill = GridBagConstraints.NONE;
@@ -251,7 +253,7 @@ public class MainGUIDesktopPane extends BaseObserver<WaypointRepository, List<Wa
         btnBrowseOutputConstraints.gridx = 2;
         btnBrowseOutputConstraints.gridy = 2;
         btnBrowseOutputConstraints.insets = new Insets(10, 0, 0, 0);
-        desktopPane.add(btnBrowseOutput, btnBrowseOutputConstraints);
+        this.add(btnBrowseOutput, btnBrowseOutputConstraints);
 
         if (shouldFill) {
             btnExportConstraints.fill = GridBagConstraints.NONE;
@@ -265,7 +267,7 @@ public class MainGUIDesktopPane extends BaseObserver<WaypointRepository, List<Wa
         btnExportConstraints.gridx = 3;
         btnExportConstraints.gridy = 2;
         btnExportConstraints.insets = new Insets(10, 10, 0, 0);
-        desktopPane.add(btnExport, btnExportConstraints);
+        this.add(btnExport, btnExportConstraints);
     }
 
     private void addActionListeners() {
@@ -284,8 +286,16 @@ public class MainGUIDesktopPane extends BaseObserver<WaypointRepository, List<Wa
     }
 
     @Override
-    public void update(List<WaypointUI> data) {
-        if (waypointTable != null && tableScrollPane != null) {
+    @SuppressWarnings("unchecked")
+    public void update(Observable observerable, Object dataObject) {
+        if (observerable instanceof WaypointRepository && dataObject instanceof List<?> && waypointTable != null && tableScrollPane != null) {
+            List<WaypointUI> data = new ArrayList<>();
+            try {
+               data  = (ArrayList<WaypointUI>) dataObject;
+            } catch (ClassCastException ex) {
+                logger.error("error casting data for use in GUI");
+                //ignore and show no data;
+            }
             waypointTable.setData(data);
             //waypointTable.revalidate();
             //waypointTable.repaint();

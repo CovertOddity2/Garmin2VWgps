@@ -28,10 +28,12 @@ public class GUI {
 
     public GUI(DomainFacade domainFacade) {
         programFrame = new JFrame("WaypointConverter");
-        mainGUIDesktopPane = new MainGUIDesktopPane(domainFacade);
+        mainGUIDesktopPane = new MainGUIDesktopPane(programFrame, domainFacade);
         settingsGUIInternalFrame = new SettingsGUIInternalFrame(domainFacade);
         menubarGUI = new MenubarGUI(programFrame);
-
+        
+        programFrame.setContentPane(mainGUIDesktopPane);
+        
         programFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         Dimension minDimension = new Dimension(350, 250);
