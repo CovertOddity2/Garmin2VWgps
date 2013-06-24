@@ -24,37 +24,57 @@
 package com.pietervaneeckhout.waypointcoverter.view;
 
 import com.pietervaneeckhout.waypointcoverter.controller.DomainFacade;
-import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointRepository;
-import com.pietervaneeckhout.waypointcoverter.model.WaypointUI;
+import com.pietervaneeckhout.waypointcoverter.controller.property.PropertiesController;
 import com.pietervaneeckhout.waypointcoverter.util.BaseObserver;
-import java.util.List;
+import java.util.Map;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 /**
- * BaseUI.java (UTF-8)
+ * SettingsGUIInternalFrame.java (UTF-8)
  *
- * <p>Abstract class for OOP purposes, defines the functions and some default
- * behaviour of the UI implementations.</p>
+ * <p>Graphical UI representation for changing setting.</p>
  *
- * 2013/06/08
+ * 2013/06/24
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
- * @since 1.0.0
- * @version 1.0.1
+ * @since 1.2.1
+ * @version 1.2.1
  */
-public abstract class BaseUI extends BaseObserver<WaypointRepository, List<WaypointUI>>{
-    
-    protected DomainFacade domainFacade;
+public class SettingsGUIInternalFrame extends BaseObserver<PropertiesController, Map<String, String>> {
 
-    /**
-     * Constructor
-     * 
-     * @param domainFacade
-     */
-    public BaseUI(DomainFacade domainFacade) {
+    private DomainFacade domainFacade;
+    private JInternalFrame settingsFrame;
+    private JPanel contentPanel;
+    private JScrollPane contentScrollPane;
+    private JCheckBox appendBox, overwriteBox;
+    private JComboBox languageComboBox;
+    private JLabel appendLabel, overwriteLabal, languageLabel;
+
+    public SettingsGUIInternalFrame(DomainFacade domainFacade) {
         this.domainFacade = domainFacade;
+        
+        //Schedule a job for the event-dispatching thread:
+        //creating and showing this application's settingsGUIWindow.
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                initGUI();
+            }
+        });
     }
 
-    public void setDomainFacade(DomainFacade domainFacade) {
-        this.domainFacade = domainFacade;
+    private void initGUI() {
+        settingsFrame = new JInternalFrame("Settings", false, true);
+    }
+    
+    @Override
+    public void update(Map<String, String> data) {
+        
     }
 }

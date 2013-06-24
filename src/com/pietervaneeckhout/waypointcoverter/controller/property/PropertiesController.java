@@ -24,10 +24,14 @@
 package com.pietervaneeckhout.waypointcoverter.controller.property;
 
 import com.pietervaneeckhout.waypointcoverter.exceptions.FileException;
+import com.pietervaneeckhout.waypointcoverter.util.BaseObservable;
+import com.pietervaneeckhout.waypointcoverter.util.BaseObserver;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.log4j.Logger;
@@ -44,13 +48,14 @@ import org.apache.log4j.Logger;
  * @since 1.2.0
  * @version 1.2.0
  */
-public class PropertiesController {
+public class PropertiesController extends BaseObservable<PropertiesController, Map<String, String>> {
 
     private final String PROPERTIESLOCATION = "settings/WaypointConverter.properties";
     private Properties properties;
     private Logger logger;
 
     public PropertiesController() throws FileException {
+        obsevers = new ArrayList<>();
         logger = Logger.getLogger(PropertiesController.class);
         properties = new Properties();
 
@@ -90,6 +95,7 @@ public class PropertiesController {
     private void persistPropertiesFile(File propertiesFile) throws FileException {
         try {
             properties.store(new FileOutputStream(propertiesFile), null);
+            notifyObservers();
         } catch (IOException ex) {
             String errorMessage = "error writing new properties file";
             logger.error(errorMessage);
@@ -123,11 +129,8 @@ public class PropertiesController {
     }
 
     public void setAppend(boolean append) throws FileException {
-        if (append) {
-            properties.setProperty("WaypointConverter.appendWaypoints", "true");
-        } else {
-            properties.setProperty("WaypointConverter.appendWaypoints", "false");
-        }
+        properties.setProperty("WaypointConverter.appendWaypoints", Boolean.toString(append));
+        persistPropertiesFile();
     }
 
     public boolean getOverwrite() throws FileException {
@@ -141,15 +144,27 @@ public class PropertiesController {
     }
 
     public void setOverwrite(boolean overwrite) throws FileException {
-        if (overwrite) {
-            properties.setProperty("WaypointConverter.overWriteExisting", "true");
-        } else {
-            properties.setProperty("WaypointConverter.overWriteExisting", "false");
-        }
+        properties.setProperty("WaypointConverter.overWriteExisting", Boolean.toString(overwrite));
         persistPropertiesFile();
     }
 
     public void setProperties(Map<String, String> propertiesValues) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void notifyObservers() {
+        Map<String, String> propMap = new HashMap<>();
+        try {
+            propMap.put("WaypointConverter.language", getLanguage());
+            propMap.put("WaypointConverter.appendWaypoints", Boolean.toString(getAppend()));
+            propMap.put("WaypointConverter.overWriteExisting", Boolean.toString(getOverwrite()));
+        } catch (FileException ex) {
+            //DO NOTHING if we get here no FileException can ever be thrown;
+        }
+        
+        for (BaseObserver<PropertiesController, Map<String, String>> baseObserver : obsevers) {
+            baseObserver.update(null);
+        }
     }
 }

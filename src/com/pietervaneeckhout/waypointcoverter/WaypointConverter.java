@@ -29,8 +29,8 @@ import com.pietervaneeckhout.waypointcoverter.controller.property.PropertiesCont
 import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointController;
 import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointRepository;
 import com.pietervaneeckhout.waypointcoverter.exceptions.FileException;
-import com.pietervaneeckhout.waypointcoverter.view.BaseUI;
 import com.pietervaneeckhout.waypointcoverter.view.GUI;
+import com.pietervaneeckhout.waypointcoverter.view.MainGUIDesktopPane;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -78,14 +78,13 @@ public class WaypointConverter {
             
             PropertiesController propertiesController = new PropertiesController();
             
-            logger.trace("creating domain facade");
             DomainFacade domainFacade = new DomainFacade(waypointController, fileController, propertiesController);
             
-            logger.trace("creating GUI");
-            BaseUI ui = new GUI(domainFacade);
+            GUI ui = new GUI(domainFacade);
             
-            logger.trace("adding ui as waypoint repository obsever");
-            waypointRepository.addObsever(ui);
+            waypointRepository.addObsever(ui.getMainGUIDesktopPane());
+            propertiesController.addObsever(ui.getSettingsGUIInternalFrame());
+            
         } catch (FileException ex) {
             logger.error("Something went wrong during startup: " + ex.getMessage());
         }
