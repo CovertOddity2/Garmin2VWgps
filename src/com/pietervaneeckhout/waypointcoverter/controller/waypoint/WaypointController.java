@@ -66,13 +66,17 @@ public class WaypointController {
        waypointRepository.toggleWaypointExport(waypointName);
     }
     
-    public void addWayPoint(Waypoint waypoint) throws WaypointAlreadyExistsException {
-        waypointRepository.addWaypoint(waypoint);
+    public void addWayPoint(Waypoint waypoint, boolean overwrite) throws WaypointAlreadyExistsException {
+        waypointRepository.addWaypoint(waypoint, overwrite);
     }
     
-    public void addWaypoints(Collection<Waypoint> waypoints) throws WaypointAlreadyExistsException {
+    public void addWaypoints(Collection<Waypoint> waypoints, boolean overwrite) throws WaypointAlreadyExistsException {
         for (Waypoint waypoint : waypoints) {
-            this.addWayPoint(waypoint);
+            this.addWayPoint(waypoint, overwrite);
         }
+    }
+
+    public void clear() {
+        waypointRepository.clear();
     }
 }

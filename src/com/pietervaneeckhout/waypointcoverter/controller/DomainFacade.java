@@ -25,6 +25,7 @@ package com.pietervaneeckhout.waypointcoverter.controller;
 
 import com.pietervaneeckhout.waypointcoverter.exceptions.ProcessingException;
 import com.pietervaneeckhout.waypointcoverter.controller.file.FileController;
+import com.pietervaneeckhout.waypointcoverter.controller.property.PropertiesController;
 import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointController;
 import com.pietervaneeckhout.waypointcoverter.exceptions.FatalException;
 import com.pietervaneeckhout.waypointcoverter.exceptions.FileException;
@@ -32,6 +33,7 @@ import com.pietervaneeckhout.waypointcoverter.exceptions.InvalidModelStateExcept
 import com.pietervaneeckhout.waypointcoverter.exceptions.ParseException;
 import com.pietervaneeckhout.waypointcoverter.exceptions.WaypointAlreadyExistsException;
 import com.pietervaneeckhout.waypointcoverter.exceptions.WaypointDoesNotExistException;
+import java.util.Map;
 import org.apache.log4j.Logger;
 
 /**
@@ -50,12 +52,14 @@ public class DomainFacade {
 
     private WaypointController waypointController;
     private FileController fileController;
+    private PropertiesController propertiesController;
     private Logger logger;
 
-    public DomainFacade(WaypointController waypointController, FileController fileController) {
-        logger = Logger.getLogger("FILE");
+    public DomainFacade(WaypointController waypointController, FileController fileController, PropertiesController propertiesController) {
+        logger = Logger.getLogger(DomainFacade.class);
         this.waypointController = waypointController;
         this.fileController = fileController;
+        this.propertiesController = propertiesController;
     }
 
     public WaypointController getWaypointController() {
@@ -75,9 +79,11 @@ public class DomainFacade {
     }
 
     public void loadFile(String filePath) throws FileException, FatalException, ProcessingException {
+        if (!propertiesController.getAppend()) {
+            waypointController.clear();
+        }
         try {
-            waypointController.addWaypoints(fileController.readWaypointsFromFile(filePath));
-
+            waypointController.addWaypoints(fileController.readWaypointsFromFile(filePath), propertiesController.getOverwrite());
         } catch (WaypointAlreadyExistsException | InvalidModelStateException | ParseException ex) {
             throw new ProcessingException(ex.getMessage());
         }
@@ -93,6 +99,9 @@ public class DomainFacade {
         } catch (InvalidModelStateException e) {
             throw new ProcessingException(e.getMessage());
         }
-        
+    }
+
+    public void saveProperties(Map<String, String> propertiesValues) {
+        propertiesController.setProperties(propertiesValues);
     }
 }

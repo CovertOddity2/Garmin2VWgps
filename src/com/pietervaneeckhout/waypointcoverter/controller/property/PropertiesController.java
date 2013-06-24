@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.log4j.Logger;
 
@@ -45,12 +46,14 @@ import org.apache.log4j.Logger;
  */
 public class PropertiesController {
 
-    private final String PROPERTIESLOCATION = "settings/WayppintConverter.properties";
+    private final String PROPERTIESLOCATION = "settings/WaypointConverter.properties";
     private Properties properties;
     private Logger logger;
 
     public PropertiesController() throws FileException {
         logger = Logger.getLogger(PropertiesController.class);
+        properties = new Properties();
+
         File propertiesFile = new File(PROPERTIESLOCATION);
         if (propertiesFile.exists()) {
             loadProperties(propertiesFile);
@@ -73,9 +76,9 @@ public class PropertiesController {
     private void createDefaultProperties(File propertiesFile) throws FileException {
         logger.info("Properties file not found, creating new");
 
-        properties.setProperty("language", "eng");
-        properties.setProperty("appendWaypoints", "true");
-        properties.setProperty("overWriteExisting", "false");
+        properties.setProperty("WaypointConverter.language", "eng");
+        properties.setProperty("WaypointConverter.appendWaypoints", "true");
+        properties.setProperty("WaypointConverter.overWriteExisting", "false");
 
         persistPropertiesFile(propertiesFile);
     }
@@ -94,37 +97,59 @@ public class PropertiesController {
         }
     }
 
-    public String getLanguage() {
-        return properties.getProperty("language");
+    public String getLanguage() throws FileException {
+        try {
+            return properties.getProperty("WaypointConverter.language");
+        } catch (NullPointerException ex) {
+            String errormMessage = "Property not found: WaypointConverter.language";
+            logger.error(errormMessage);
+            throw new FileException(errormMessage);
+        }
     }
 
     public void setLanguage(String language) throws FileException {
-        properties.setProperty("language", language);
+        properties.setProperty("WaypointConverter.language", language);
         persistPropertiesFile();
     }
-    
-    public boolean getAppend() {
-        return properties.getProperty("appendWaypoints").equalsIgnoreCase("true");
+
+    public boolean getAppend() throws FileException {
+        try {
+            return properties.getProperty("WaypointConverter.appendWaypoints").equalsIgnoreCase("true");
+        } catch (NullPointerException ex) {
+            String errormMessage = "Property not found: WaypointConverter.appendWaypoints";
+            logger.error(errormMessage);
+            throw new FileException(errormMessage);
+        }
     }
 
     public void setAppend(boolean append) throws FileException {
         if (append) {
-            properties.setProperty("appendWaypoints", "true");
+            properties.setProperty("WaypointConverter.appendWaypoints", "true");
         } else {
-            properties.setProperty("appendWaypoints", "false");
+            properties.setProperty("WaypointConverter.appendWaypoints", "false");
         }
     }
 
-    public boolean getOverwrite() {
-        return properties.getProperty("overWriteExisting").equalsIgnoreCase("true");
+    public boolean getOverwrite() throws FileException {
+        try {
+        return properties.getProperty("WaypointConverter.overWriteExisting").equalsIgnoreCase("true");
+        } catch (NullPointerException ex) {
+            String errormMessage = "Property not found: WaypointConverter.overWriteExisting";
+            logger.error(errormMessage);
+            throw new FileException(errormMessage);
+        }
     }
-    
+
     public void setOverwrite(boolean overwrite) throws FileException {
         if (overwrite) {
-            properties.setProperty("overWriteExisting", "true");
+            properties.setProperty("WaypointConverter.overWriteExisting", "true");
         } else {
-            properties.setProperty("overWriteExisting", "false");
+            properties.setProperty("WaypointConverter.overWriteExisting", "false");
         }
         persistPropertiesFile();
+    }
+
+    public void setProperties(Map<String, String> propertiesValues) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

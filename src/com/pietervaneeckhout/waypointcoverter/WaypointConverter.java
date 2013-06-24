@@ -25,8 +25,10 @@ package com.pietervaneeckhout.waypointcoverter;
 
 import com.pietervaneeckhout.waypointcoverter.controller.DomainFacade;
 import com.pietervaneeckhout.waypointcoverter.controller.file.FileController;
+import com.pietervaneeckhout.waypointcoverter.controller.property.PropertiesController;
 import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointController;
 import com.pietervaneeckhout.waypointcoverter.controller.waypoint.WaypointRepository;
+import com.pietervaneeckhout.waypointcoverter.exceptions.FileException;
 import com.pietervaneeckhout.waypointcoverter.view.BaseUI;
 import com.pietervaneeckhout.waypointcoverter.view.GUI;
 import org.apache.log4j.Logger;
@@ -60,29 +62,32 @@ public class WaypointConverter {
      * Constructor
      */
     public WaypointConverter() {
-        
+
         //load log4j.properties file.
         PropertyConfigurator.configure("settings/log4j.properties");
-        
+
         //make logger
-        logger = Logger.getLogger("FILE");
+        logger = Logger.getLogger(WaypointController.class);
         
-        logger.trace("creating waypoint repository");
-        WaypointRepository waypointRepository = new WaypointRepository();
-        
-        logger.trace("creating waypoint controller");
-        WaypointController waypointController = new WaypointController(waypointRepository);
-        
-        logger.trace("creating file controller");
-        FileController fileController = new FileController();
-        
-        logger.trace("creating domain facade");
-        DomainFacade domainFacade = new DomainFacade(waypointController, fileController);
-        
-        logger.trace("creating GUI");
-        BaseUI ui = new GUI(domainFacade);
-        
-        logger.trace("adding ui as waypoint repository obsever");
-        waypointRepository.addObsever(ui);
+        try {
+            WaypointRepository waypointRepository = new WaypointRepository();
+            
+            WaypointController waypointController = new WaypointController(waypointRepository);
+            
+            FileController fileController = new FileController();
+            
+            PropertiesController propertiesController = new PropertiesController();
+            
+            logger.trace("creating domain facade");
+            DomainFacade domainFacade = new DomainFacade(waypointController, fileController, propertiesController);
+            
+            logger.trace("creating GUI");
+            BaseUI ui = new GUI(domainFacade);
+            
+            logger.trace("adding ui as waypoint repository obsever");
+            waypointRepository.addObsever(ui);
+        } catch (FileException ex) {
+            logger.error("Something went wrong during startup: " + ex.getMessage());
+        }
     }
 }

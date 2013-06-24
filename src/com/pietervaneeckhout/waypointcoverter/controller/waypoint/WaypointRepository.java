@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -76,12 +75,12 @@ public class WaypointRepository extends BaseObservable<WaypointRepository, List<
         return exportList;
     }
 
-    public void addWaypoint(Waypoint waypoint) throws WaypointAlreadyExistsException {
-        if (!waypoints.containsKey(waypoint.getName())) {
+    public void addWaypoint(Waypoint waypoint, boolean overwrite) throws WaypointAlreadyExistsException {
+        if (!overwrite && waypoints.containsKey(waypoint.getName())) {
+            //throw new WaypointAlreadyExistsException("trying to add waypoint with duplicate name: " + waypoint.getName());
+        } else {
             waypoints.put(waypoint.getName(), waypoint);
             notifyObservers();
-        } else {
-            throw new WaypointAlreadyExistsException("trying to add waypoint with duplicate name: " + waypoint.getName());
         }
     }
 
@@ -119,7 +118,7 @@ public class WaypointRepository extends BaseObservable<WaypointRepository, List<
 
                 list.add(waypoint.toWaypointUIModel());
             }
-            
+
             for (BaseObserver<WaypointRepository, List<WaypointUI>> obsever : obsevers) {
                 obsever.update(list);
             }
@@ -129,7 +128,7 @@ public class WaypointRepository extends BaseObservable<WaypointRepository, List<
         }
     }
 
-    public void toggleWaypointExport(String waypointName) throws WaypointDoesNotExistException{
+    public void toggleWaypointExport(String waypointName) throws WaypointDoesNotExistException {
         getWaypoint(waypointName).toggleExport();
         notifyObservers();
     }
