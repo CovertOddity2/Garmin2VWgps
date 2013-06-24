@@ -8,16 +8,15 @@ Working:
 
 import:
 *  Garmin Mapsource .txt in digital coordinate format
+*  Import Garmin Mapsource .txt in minute coordinate format
+*  Import Garmin Mapsource .gpx
+*  Import Basecamp .txt, .csv and .gpx files
 
 export:
 -  Opel Insignia coupe 2013
 
 Planned
 -------
-
-+  Import Garmin Mapsource .txt in minute coordinate format
-+  Import Garmin Mapsource .gpx
-+  Import Basecamp .txt, .csv and .gpx files
 
 Suggestions
 -----------
