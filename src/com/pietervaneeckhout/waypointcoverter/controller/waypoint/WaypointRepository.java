@@ -28,12 +28,11 @@ import com.pietervaneeckhout.waypointcoverter.exceptions.WaypointAlreadyExistsEx
 import com.pietervaneeckhout.waypointcoverter.exceptions.WaypointDoesNotExistException;
 import com.pietervaneeckhout.waypointcoverter.model.Waypoint;
 import com.pietervaneeckhout.waypointcoverter.model.WaypointUI;
-import com.pietervaneeckhout.waypointcoverter.util.BaseObservable;
-import com.pietervaneeckhout.waypointcoverter.util.BaseObserver;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 import org.apache.log4j.Logger;
 
 /**
@@ -47,7 +46,7 @@ import org.apache.log4j.Logger;
  * @since 1.0.0
  * @version 1.0.2
  */
-public class WaypointRepository extends BaseObservable<WaypointRepository, List<WaypointUI>> {
+public class WaypointRepository extends Observable {
 
     private Map<String, Waypoint> waypoints;
     private Logger logger;
@@ -59,7 +58,6 @@ public class WaypointRepository extends BaseObservable<WaypointRepository, List<
     public WaypointRepository(Map<String, Waypoint> waypoints) {
         super();
         logger = Logger.getLogger("FILE");
-        obsevers = new ArrayList<>();
         this.waypoints = waypoints;
     }
 
@@ -87,6 +85,7 @@ public class WaypointRepository extends BaseObservable<WaypointRepository, List<
     public void removeWaypoint(Waypoint waypoint) throws WaypointDoesNotExistException {
         if (waypoints.containsKey(waypoint.getName())) {
             waypoints.remove(waypoint.getName());
+            notifyObservers();
         } else {
             logger.debug("removing waypoint failed: " + waypoint.getName() + " not found in the collections");
             throw new WaypointDoesNotExistException(waypoint.getName() + " not found in the collections");
@@ -118,10 +117,8 @@ public class WaypointRepository extends BaseObservable<WaypointRepository, List<
 
                 list.add(waypoint.toWaypointUIModel());
             }
-
-            for (BaseObserver<WaypointRepository, List<WaypointUI>> obsever : obsevers) {
-                obsever.update(list);
-            }
+            
+            notifyObservers(list);
         } catch (InvalidModelStateException ex) {
             logger.error(ex.getMessage());
             clear();
