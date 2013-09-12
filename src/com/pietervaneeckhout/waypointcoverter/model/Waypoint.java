@@ -29,6 +29,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import org.apache.log4j.Logger;
 
 /**
@@ -175,7 +176,8 @@ public class Waypoint implements Serializable {
     }
 
     public String toOpelWaypoint() {
-        DecimalFormat decimalFormat = new DecimalFormat("###.000000");
+        DecimalFormat decimalFormat = getWaypointDecimalFormat();
+        
         StringBuilder builder = new StringBuilder();
         if (!east) {
             builder.append('-');
@@ -195,7 +197,8 @@ public class Waypoint implements Serializable {
     
     @Override
     public String toString() {
-        DecimalFormat decimalFormat = new DecimalFormat("###.000000");
+        DecimalFormat decimalFormat = getWaypointDecimalFormat();
+        
         StringBuilder builder = new StringBuilder();
          if (export) {
             builder.append("export");
@@ -223,7 +226,8 @@ public class Waypoint implements Serializable {
     }
     
     public WaypointUI toWaypointUIModel() throws InvalidModelStateException {
-        DecimalFormat decimalFormat = new DecimalFormat("###.000000");
+        DecimalFormat decimalFormat = getWaypointDecimalFormat();
+        
         String latitudeString, longitudeString;
         WaypointUI waypointUI;
         
@@ -243,7 +247,7 @@ public class Waypoint implements Serializable {
         
         try {
             waypointUI = new WaypointUI(export, name, latitudeString, longitudeString);
-        } catch (Exception e) {
+        } catch (InvalidModelStateException e) {
             throw new InvalidModelStateException("could not convert to WaypointUI: " + e.getMessage());
         }
         
@@ -258,5 +262,13 @@ public class Waypoint implements Serializable {
 
     private void writeObject(ObjectOutputStream outputStream) throws IOException {
         outputStream.defaultWriteObject();
+    }
+    
+    private DecimalFormat getWaypointDecimalFormat() {
+        DecimalFormat decimalFormat = new DecimalFormat("###.000000");
+        DecimalFormatSymbols decimalSymbol = new DecimalFormatSymbols();
+        decimalSymbol.setDecimalSeparator('.');
+        decimalFormat.setDecimalFormatSymbols(decimalSymbol);
+        return decimalFormat;
     }
 }

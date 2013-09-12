@@ -14,3 +14,6 @@ output file path is empty or null
 inputtput file path is empty or null
 The requested file was not found
 There was a problem parsing the waypoint: could not parse The coordinate formatting
+IO problem: E:\Agde1_opel.txt already exists
+input file path is empty or null
+IO problem: D:\User Data\Pieter\Documents\Agde1_opel.txt already exists
