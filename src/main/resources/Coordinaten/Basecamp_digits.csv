@@ -1,0 +1,49 @@
+﻿
+metadata
+ID,name,desc,time,keywords,minlat,minlon,maxlat,maxlon,
+1,,,2013-06-20T14:53:45Z,,-42.175903050228953,-7.543678572401404,51.491800015792251,71.304769143462181,
+
+author
+ID,name,email,
+
+copyright
+year,license,author,
+
+link
+metadataID,authorID,wptID,rteptID,trkptID,rteID,trkID,text,type,href,
+1,,,,,,,"Garmin International",,http://www.garmin.com,
+
+rte
+ID,name,cmt,desc,src,number,type,IsAutoNamed,DisplayColor,TransportationMode,
+
+rtept
+ID,rteID,lat,lon,ele,time,magvar,geoidheight,name,cmt,desc,src,sym,type,fix,sat,hdop,vdop,pdop,ageofdgpsdata,dgpsid,DepartureTime,StopDuration,ArrivalTime,CalculationMode,ElevationMode,NamedRoad_Name,NamedRoad_Id,NamedRoad_ProductId,
+
+wpt
+ID,lat,lon,ele,time,magvar,geoidheight,name,cmt,desc,src,sym,type,fix,sat,hdop,vdop,pdop,ageofdgpsdata,dgpsid,Proximity,Temperature,Depth,DisplayMode,Samples,Expiration,
+1,51.491800015792251,3.63650000654161,,2013-06-20T14:52:15Z,,,"coupure torenw","Middelburg","Middelburg",,"Pin, Red","user",,,,,,,,,,,SymbolAndName,,,
+2,47.647705078125,-3.174362182617188,,2013-06-20T14:46:23Z,,,"noordwest","Kervalart","Kervalart",,"City (Small)","user",,,,,,,,,,,SymbolAndName,,,
+3,-41.097924672067165,71.304769143462181,,2013-06-20T12:43:09Z,,,"zuidoost",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,
+4,-42.175903050228953,-7.543678572401404,,2013-06-20T12:43:35Z,,,"zuidwest",,,,"Flag, Blue","user",,,,,,,,,,,SymbolAndName,,,
+
+Address
+wptID,StreetAddress1,StreetAddress2,City,State,Country,PostalCode,
+
+PhoneNumber
+wptID,Category,value,
+
+Categories
+wptID,Category,
+1,"20/06/2013 16:51:34",
+2,"20/06/2013 16:51:34",
+3,"20/06/2013 16:51:34",
+4,"20/06/2013 16:51:34",
+
+trk
+ID,name,cmt,desc,src,number,type,DisplayColor,
+
+trkseg
+ID,trkID,
+
+trkpt
+ID,trksegID,lat,lon,ele,time,magvar,geoidheight,name,cmt,desc,src,sym,type,fix,sat,hdop,vdop,pdop,ageofdgpsdata,dgpsid,Temperature,Depth,wtemp,hr,cad,
