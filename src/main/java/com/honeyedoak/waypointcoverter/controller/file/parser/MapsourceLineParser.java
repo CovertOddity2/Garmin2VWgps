@@ -24,84 +24,85 @@
 package com.honeyedoak.waypointcoverter.controller.file.parser;
 
 import com.honeyedoak.waypointcoverter.exceptions.InvalidModelStateException;
-import com.honeyedoak.waypointcoverter.model.Waypoint;
 import com.honeyedoak.waypointcoverter.exceptions.ParseException;
+import com.honeyedoak.waypointcoverter.model.Waypoint;
+import org.apache.log4j.Logger;
 
 import java.util.Arrays;
-import org.apache.log4j.Logger;
 
 /**
  * MapsourceLineParser.java (UTF-8)
- *
+ * <p>
  * <p>Implementation of a LineParser.</p>
- *
+ * <p>
  * 2013/06/23
  *
  * @author Pieter Van Eeckhout <vaneeckhout.pieter@gmail.com>
- * @since 1.1.0
  * @version 1.1.0
+ * @since 1.1.0
  */
 public class MapsourceLineParser implements LineParser {
-    
-    private Logger logger;
 
-    public MapsourceLineParser() {
-        logger = Logger.getLogger(MapsourceLineParser.class);
-    }
-    
+	private static final String ERROR_STRING = "There was a problem parsing the waypoint: could not parse The coordinate formatting of line:%n%n%s";
+	private Logger logger;
 
-    @Override
-    public Waypoint parseLine(String line, String seperator) throws ParseException {
-        boolean north, east;
-        double longitude, latitude;
-        String name;
+	public MapsourceLineParser() {
+		logger = Logger.getLogger(MapsourceLineParser.class);
+	}
 
-        String[] parts = line.split(seperator);
-        String[] position = parts[4].split(" ");
 
-        name = parts[1];
+	@Override
+	public Waypoint parseLine(String line, String seperator) throws ParseException {
+		boolean north, east;
+		double longitude, latitude;
+		String name;
 
-        try {
-            if (position.length == 2) {
-                logger.info("recognized digital coordinate format");
-                north = position[0].startsWith("N");
-                east = position[1].startsWith("E");
+		String[] parts = line.split(seperator);
+		String[] position = parts[4].split(" ");
 
-                latitude = Double.parseDouble(position[0].substring(1));
-                longitude = Double.parseDouble(position[1].substring(1));
-            } else if (position.length == 4) {
-                logger.info("recognized degree coordinate format");
-                north = position[0].startsWith("N");
-                east = position[2].startsWith("E");
+		name = parts[1];
 
-                latitude = Double.parseDouble(position[0].substring(1));
-                latitude += Double.parseDouble(position[1]) / 60;
-                longitude = Double.parseDouble(position[2].substring(1));
-                longitude += Double.parseDouble(position[3]) / 60;
-            } else {
-                String errorString = "There was a problem parsing the waypoint: could not parse The coordinate formatting";
-                logger.error(errorString);
-                logger.debug(Arrays.deepToString(position));
-                throw new ParseException(errorString);
-            }
-        } catch (NumberFormatException e) {
-            String errorString = "There was a problem parsing the waypoint: could not parse The coordinate formatting";
-            logger.error(errorString);
-            logger.debug(e.getMessage());
-            throw new ParseException(errorString);
-        }
+		try {
+			if (position.length == 2) {
+				logger.info("recognized digital coordinate format");
+				north = position[0].startsWith("N");
+				east = position[1].startsWith("E");
 
-        Waypoint waypoint = null;
+				latitude = Double.parseDouble(position[0].substring(1));
+				longitude = Double.parseDouble(position[1].substring(1));
+			} else if (position.length == 4) {
+				logger.info("recognized degree coordinate format");
+				north = position[0].startsWith("N");
+				east = position[2].startsWith("E");
 
-        try {
-            waypoint = new Waypoint(name, longitude, east, latitude, north);
-        } catch (InvalidModelStateException ex) {
-            throw new ParseException("There was a problem parsing the waypoint: " + ex.getMessage());
-        }
+				latitude = Double.parseDouble(position[0].substring(1));
+				latitude += Double.parseDouble(position[1]) / 60;
+				longitude = Double.parseDouble(position[2].substring(1));
+				longitude += Double.parseDouble(position[3]) / 60;
+			} else {
+				String errorString = String.format(ERROR_STRING, line);
+				logger.error(errorString);
+				logger.debug(Arrays.deepToString(position));
+				throw new ParseException(errorString);
+			}
+		} catch (NumberFormatException e) {
+			String errorString = String.format(ERROR_STRING, line);
+			logger.error(errorString);
+			logger.debug(e.getMessage());
+			throw new ParseException(errorString);
+		}
 
-        logger.debug(waypoint.toString());
+		Waypoint waypoint = null;
 
-        return waypoint;
-    }
-    
+		try {
+			waypoint = new Waypoint(name, longitude, east, latitude, north);
+		} catch (InvalidModelStateException ex) {
+			throw new ParseException("There was a problem parsing the waypoint: " + ex.getMessage());
+		}
+
+		logger.debug(waypoint.toString());
+
+		return waypoint;
+	}
+
 }

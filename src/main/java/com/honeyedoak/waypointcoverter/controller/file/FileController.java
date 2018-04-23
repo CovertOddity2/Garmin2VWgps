@@ -32,10 +32,13 @@ import com.honeyedoak.waypointcoverter.model.Waypoint;
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * GPSCoordinateControler.java (UTF-8)
@@ -50,75 +53,66 @@ import java.util.List;
  */
 public class FileController {
 
-    private Logger logger;
-    private FileParser fileParser;
+	private Logger logger;
+	private FileParser fileParser;
 
-    public FileController() {
-        logger = Logger.getLogger(FileController.class);
-    }
+	public FileController() {
+		logger = Logger.getLogger(FileController.class);
+	}
 
-    public List<Waypoint> readWaypointsFromFile(String filePath) throws FileException, FatalException, InvalidModelStateException, ParseException {
+	public List<Waypoint> readWaypointsFromFile(String filePath) throws FileException, FatalException, InvalidModelStateException, ParseException {
 
-        if (filePath == null || filePath.isEmpty()) {
-            logger.error("input file path is empty or null");
-            throw new InvalidModelStateException("intput filePath cannot be null or empty");
-        }
+		if (filePath == null || filePath.isEmpty()) {
+			logger.error("input file path is empty or null");
+			throw new InvalidModelStateException("intput filePath cannot be null or empty");
+		}
 
-        if (filePath.endsWith("txt")) {
-            fileParser = new TxtFileParser();
-        } else if (filePath.endsWith("gpx")) {
-            fileParser = new GpxFileParser();
-        } else if (filePath.endsWith("csv")) {
-            fileParser = new CsvFileParser();
-        } else {
-            throw new ParseException("unsupported File extention");
-        }
+		if (filePath.endsWith("txt")) {
+			fileParser = new TxtFileParser();
+		} else if (filePath.endsWith("gpx")) {
+			fileParser = new GpxFileParser();
+		} else if (filePath.endsWith("csv")) {
+			fileParser = new CsvFileParser();
+		} else {
+			throw new ParseException("unsupported File extention");
+		}
 
-        return fileParser.parseFile(new File(filePath));
-    }
+		return fileParser.parseFile(new File(filePath));
+	}
 
-    public void writeOpelWaypointsToFile(String filePath, List<Waypoint> waypointList) throws InvalidModelStateException, FileException {
-        writeOpelWaypointsToFile(filePath, waypointList, false);
-    }
+	public void writeOpelWaypointsToFile(String filePath, List<Waypoint> waypointList) throws InvalidModelStateException, IOException {
+		writeOpelWaypointsToFile(filePath, waypointList, false);
+	}
 
-    public void writeOpelWaypointsToFile(String filePath, List<Waypoint> waypointList, boolean overwrite) throws InvalidModelStateException, FileException {
+	public void writeOpelWaypointsToFile(String filePath, List<Waypoint> waypointList, boolean overwrite) throws InvalidModelStateException, IOException {
 
-        PrintWriter pw = null;
+		if (filePath == null || filePath.isEmpty()) {
+			logger.error("output file path is empty or null");
+			throw new InvalidModelStateException("output filePath cannot be null or empty.");
+		}
 
-        if (filePath == null || filePath.isEmpty()) {
-            logger.error("output file path is empty or null");
-            throw new InvalidModelStateException("output filePath cannot be null or empty.");
-        }
+		//auto add file extention
+		if (!filePath.endsWith(".txt")) {
+			logger.info("file was missing extion, added .txt");
+			filePath += ".txt";
+		}
 
-        //auto add file extention
-        if (!filePath.endsWith(".txt")) {
-            logger.info("file was missing extion, added .txt");
-            filePath += ".txt";
-        }
+		try (OutputStream outstream = Files.newOutputStream(Paths.get(filePath))) {
+			File file = new File(filePath);
 
-        try {
-            File file = new File(filePath);
+			if (file.exists() && !overwrite) {
+				logger.info(filePath + " already exists");
+				throw new FileAlreadyExistsException(filePath + " already exists");
+			} else {
+				logger.info(filePath + " already exists. Cleared for overwrite");
+			}
 
-            if (file.exists() && !overwrite) {
-                logger.info(filePath + " already exists");
-                throw new FileAlreadyExistsException(filePath + " already exists");
-            } else {
-                logger.info(filePath + " already exists. Cleared for overwrite");
-            }
+			final String collect = waypointList.stream().map(Waypoint::toOpelWaypoint).collect(Collectors.joining(String.format("%n")));
+			outstream.write(collect.getBytes(StandardCharsets.ISO_8859_1));
 
-            logger.debug("writing " + waypointList.size() + " waypoints to file");
-            FileWriter fw = new FileWriter(file);
-            pw = new PrintWriter(fw);
-            for (Waypoint waypoint : waypointList) {
-                pw.println(waypoint.toOpelWaypoint());
-            }
-        } catch (IOException ex) {
-            logger.error("IO problem: " + ex.getMessage());
-            throw new FileException("There was an error writing to file");
-        } finally {
-            if (pw != null) {
-                pw.close();
-            }
-        }
-    }
+		} catch (IOException e) {
+			logger.error(e);
+			throw e;
+		}
+	}
 }

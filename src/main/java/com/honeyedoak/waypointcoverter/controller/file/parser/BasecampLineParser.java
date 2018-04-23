@@ -52,7 +52,7 @@ public class BasecampLineParser implements LineParser {
         try {
             String[] parts = line.split(seperator);
 
-            String name = parts[7].replaceAll("^\"|\"$", "");;
+            String name = parts[7].replaceAll("^\"|\"$", "");
             double latitude = Double.parseDouble(parts[1]);
             double longitude = Double.parseDouble(parts[2]);
             boolean north, east;
